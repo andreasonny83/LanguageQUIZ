@@ -1,0 +1,241 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="lq-login">
+<template>
+	<style include="lq-shared-styles">
+	.hero {
+		padding: 50px;
+	}
+
+	lq-card {
+		width: 500px;
+
+		--lq-card-actions: {
+			text-align: right;
+			@apply(--layout-center);
+		}
+	}
+
+	paper-input, paper-dropdown-menu {
+		outline: none;
+	}
+
+	.centered {
+		max-width: 400px;
+		margin-left: auto;
+		margin-right: auto;
+		text-align: center;
+	}
+
+	.secondary {
+		height: 500px;
+		width: 100%;
+		background-color: #fff;
+		overflow: auto;
+	}
+
+	footer {
+		height: 200px;
+	}
+	</style>
+
+	<div class="horizontal-section-container hero">
+		<lq-card id="card_login" heading="Log In">
+			<div class="card-content">
+				<paper-input id="login_email" name="username" required label="E-mail" autofocus type="email" error-message="enter a valid email address" value="{{email}}" tabindex="1"></paper-input>
+				<paper-input id="login_password" name="password" label="Password" required minlength=6 type="password" error-message="password must be 6 minimum characters" value="{{password}}" tabindex="2"></paper-input>
+			</div>
+			<div class="card-actions">
+				<paper-button class="orange" on-tap="password_reset" tabindex="4">
+					reset password
+				</paper-button>
+				<paper-button class="green" on-tap="login" tabindex="3">
+					<iron-icon icon="check"></iron-icon>
+					ok
+				</paper-button>
+			</div>
+
+			<iron-a11y-keys
+				id="login_keys"
+				keys="enter"
+				target="{{card_login}}"
+				on-keys-pressed="login">
+			</iron-a11y-keys>
+		</lq-card>
+	</div>
+
+	<div class="horizontal-section-container hero">
+		<lq-card id="card_register" heading="Register">
+			<div class="card-content">
+				<paper-input id="reg_name" type="text" label="User name*" required pattern="[a-zA-Z0-9\s]+" minlength=5 value="{{reg.name}}" error-message="letters and number only. Minimun of 5 charaters" tabindex="4"></paper-input>
+				<paper-input id="reg_email" type="text" label="Email*" required value="{{reg.email}}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" error-message="enter a valid email address" tabindex="5"></paper-input>
+				<paper-input id="reg_email_confirm" type="text" label="Re-enter email*" required value="{{reg.email_confirm}}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" error-message="email address doesn't match" tabindex="6"></paper-input>
+				<paper-input id="reg_password" type="password" label="Password*" required pattern=".{6,}" value="{{reg.password}}" error-message="password must be 6 characters minimum." tabindex="7"></paper-input>
+				<paper-input id="reg_password_confirm" type="password" required label="Re-enter password*" minlength=6 value="{{reg.password_confirm}}" error-message="password doesn't match" tabindex="8"></paper-input>
+				<paper-dropdown-menu id="language" no-animations="true" label="Your language" tabindex="9" selected-item-label="{{reg.lang}}">
+					<paper-menu class="dropdown-content">
+						<paper-item>English</paper-item>
+						<paper-item>Spanish</paper-item>
+						<paper-item>Franch</paper-item>
+						<paper-item>Italian</paper-item>
+						<paper-item>Japanese</paper-item>
+						<paper-item>Swedish</paper-item>
+					</paper-menu>
+				</paper-dropdown-menu>
+			</div>
+			<div class="card-actions">
+				<paper-button class="green" on-tap="register">
+					<iron-icon icon="check" tabindex="10"></iron-icon>
+					Register
+				</paper-button>
+			</div>
+
+			<iron-a11y-keys
+				id="register_keys"
+				keys="enter"
+				target="{{card_register}}"
+				on-keys-pressed="register">
+			</iron-a11y-keys>
+		</lq-card>
+	</div>
+
+	<div class="horizontal-section-container">
+		<div class="secondary">
+			<h2 class='centered'>
+				some images and product description here
+			</h2>
+		</div>
+	</div>
+
+	<footer>
+		<h2 class='centered'>
+			Footer
+		</h2>
+	</footer>
+
+</template>
+
+<script>
+Polymer({
+	is: 'lq-login',
+
+	properties: {
+		reg: Object
+	},
+
+	observers: [
+		'_verifyName( reg.name )',
+		'_verifyEmail( reg.email, reg.email_confirm )',
+		'_verifyPassword( reg.password, reg.password_confirm )'
+	],
+
+	attached: function() {
+		this.init();
+	},
+
+	init: function() {
+		this.resetFields();
+		lqMain.$.spinner.active = false; //loading
+	},
+
+	/**
+	 * Reset text fields and hide text fields errors
+	 */
+	resetFields: function() {
+		this.email    = '';
+		this.password = '';
+		this.reg      = {
+			name:             '',
+			email:            '',
+			email_confirm:    '',
+			password:         '',
+			password_confirm: '',
+			lang:             ''
+		};
+
+		this.$.reg_name.invalid = false;
+		this.$.reg_email.invalid = false;
+		this.$.reg_email_confirm.invalid = false;
+		this.$.reg_password.invalid = false;
+		this.$.reg_password_confirm.invalid = false;
+	},
+
+	_verifyName() {
+		this.$.reg_name.validate();
+	},
+
+	_verifyEmail: function( email, email_confirm ) {
+		this.$.reg_email.validate();
+
+		// return error if the value is not matching the element requirements
+		this.$.reg_email_confirm.validate();
+		if ( this.$.reg_email_confirm.invalid ) return;
+
+		// Verify if the entered email match the other one
+		this.$.reg_email_confirm.invalid = true;
+
+		if ( email === email_confirm ) {
+			this.$.reg_email_confirm.invalid = false;
+		}
+	},
+
+	_verifyPassword: function( password, password_confirm ) {
+		this.$.reg_password.validate();
+
+		// return error if the value is not matching the element requirements
+		this.$.reg_password_confirm.validate();
+
+		if ( this.$.reg_password_confirm.invalid ) return;
+
+		// Verify if the entered password match the other one
+		this.$.reg_password_confirm.invalid = true;
+
+		if ( password === password_confirm ) {
+			this.$.reg_password_confirm.invalid = false;
+		}
+	},
+
+	register: function() {
+		this.reg.lang = this.$.language.selectedItemLabel;
+		this.$.reg_name.validate();
+		this.$.reg_email.validate();
+		this.$.reg_email_confirm.validate();
+		this.$.reg_password.validate();
+		this.$.reg_password_confirm.validate();
+
+		if ( ! this.reg.lang ) {
+			lqMain.fireToast( "Please, select your language first." );
+			return;
+		}
+
+		if ( this.$.reg_name.invalid || this.$.reg_email.invalid || this.$.reg_email_confirm.invalid || this.$.reg_password.invalid || this.$.reg_password_confirm.invalid ) {
+			lqMain.fireToast( "Please, fix the wrong information and try again." );
+			return;
+		}
+
+		lqMain.$.firebaseLogin.createUser( this.reg.email, this.reg.password );
+	},
+
+	/**
+	 * Verify text fields
+	 * then send the Ajax request to the API
+	 */
+	login: function() {
+		this.$.login_email.validate();
+		this.$.login_password.validate();
+
+		if ( this.email.length > 0 && this.password.length > 0 && this.$.login_email.validate() && this.$.login_password.validate() ) {
+			lqMain.$.firebaseLogin.login({email:this.email, password:this.password});
+		}
+		else {
+			lqMain.fireToast( "Please, check the entered details and try again." );
+		}
+	},
+
+	password_reset: function() {
+		lqMain.$.firebaseLogin.sendPasswordResetEmail(this.email);
+	}
+
+});
+</script>
+</dom-module>

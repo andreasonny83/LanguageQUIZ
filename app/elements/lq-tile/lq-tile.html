@@ -1,0 +1,145 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../lq-card/lq-card.html">
+
+<dom-module id="lq-tile">
+<template>
+	<style>
+	:host {
+		display: block;
+		opacity: 0;
+		margin: 12px;
+		transition: all linear .4s;
+
+		@apply(--lq-tile);
+	}
+
+	:host([loading]) {
+		@apply(--layout-horizontal);
+		@apply(--layout-center);
+		@apply(--layout-center-justified);
+		@apply(--layout-flex-auto);
+	}
+
+	lq-card {
+		width: 100%;
+		--paper-card-header-color: var(--paper-pink-500);
+	}
+
+	::content .description {
+		height: 97px;
+		overflow: hidden;
+	}
+
+	.card-actions {
+		display: flex;
+	}
+
+	paper-icon-button.red {
+		color: var(--paper-red-500);
+
+		--paper-icon-button-ink-color: var(--paper-red-500);
+	}
+
+	paper-icon-button.red:hover {
+		background: var(--paper-red-50);
+		border-radius: 50%;
+	}
+
+	iron-image {
+		@apply(--layout-flex);
+	}
+	</style>
+
+	<template is="dom-if" if="[[loading]]">
+		<paper-spinner active$="[[active]]"></paper-spinner>
+	</template>
+
+	<template is="dom-if" if="[[!loading]]">
+		<lq-card heading="[[title]]" image="[[image]]" placeholder="[[placeholder]]" sizing="[[sizing]]" fade$="[[fade]]">
+			<div class="card-content">
+				<content select=".description"></content>
+			</div>
+			<div class="card-actions">
+				<paper-button>Nay</paper-button>
+				<paper-button>Yay!</paper-button>
+				<div class="flex"></div>
+				<paper-icon-button icon="favorite" title="favorite" class="red"></paper-icon-button>
+			</div>
+		</lq-card>
+	</template>
+</template>
+
+<script>
+Polymer({
+	is: 'lq-tile',
+
+	properties: {
+		loading: {
+			type: Boolean,
+			value: false,
+			reflectToAttribute: true
+		},
+
+		small: {
+			type: Boolean,
+			value: false,
+			reflectToAttribute: true
+		},
+
+		large: {
+			type: Boolean,
+			value: false,
+			reflectToAttribute: true
+		},
+
+		image: {
+			type: String,
+			value: "images/sample.jpg",
+		},
+
+		animationConfig: {
+			value: function() {
+				return {
+					'entry': [{
+						name: 'fade-in-animation',
+						timing: {
+							duration: 800
+						},
+						node: this
+					},
+					{
+						name: 'slide-down-animation',
+						timing: {
+							duration: 250
+						},
+						node: this
+					}]
+				}
+			}
+		}
+	},
+
+	behaviors: [
+		Polymer.NeonAnimationRunnerBehavior
+	],
+	listeners: {
+		'neon-animation-finish': '_onNeonAnimationFinish'
+	},
+
+	attached: function() {
+		this.async( function() {
+			this.show();
+		}, 250 );
+
+	},
+
+	show: function() {
+		this.playAnimation( 'entry' );
+	},
+
+	_onNeonAnimationFinish: function() {
+		this.style.opacity = 1;
+	}
+});
+</script>
+</dom-module>

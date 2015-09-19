@@ -1,0 +1,276 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="lq-user-profile">
+<template>
+	<style include="lq-shared-styles">
+	:host {
+		display: block;
+		height: 100%;
+	}
+
+	.content {
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	lq-card {
+		width: 60%;
+		margin-top: 30px;
+		margin-bottom: 30px;
+	}
+
+	lq-card#avatar {
+		--lq-card-content: {
+			@apply(--layout-horizontal);
+		}
+	}
+
+	lq-card#avatar .image {
+		@apply(‑‑layout-flex);
+	}
+
+	lq-card#avatar .image-url {
+		@apply(--layout-flex);
+		margin-left: 20px;
+	}
+
+	lq-card#card_email, card#card_password {
+		--lq-card-content: {
+			@apply(--layout-vertical);
+		}
+	}
+
+	lq-card#card_email paper-input, lq-card#card_password paper-input {
+		display: block;
+	}
+
+	iron-image {
+		border: 1px solid rgb(0, 0, 0);
+	}
+
+	.loading {
+		height: 28px;
+		position: relative;
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	paper-spinner {
+		--paper-spinner-layer-1-color: var(--paper-red-500);
+		--paper-spinner-layer-2-color: var(--paper-red-500);
+		--paper-spinner-layer-3-color: var(--paper-red-500);
+		--paper-spinner-layer-4-color: var(--paper-red-500);
+	}
+	</style>
+
+	<!-- Home -->
+	<paper-scroll-header-panel condenses header-height="160" condensed-header-height="128">
+
+		<!-- Main Toolbar -->
+		<paper-toolbar class="tall">
+
+			<paper-icon-button on-tap="_goBack" icon="arrow-back"></paper-icon-button>
+			<div class="title">The LanguageQUIZ</div>
+
+		</paper-toolbar>
+
+		<!-- Main Content -->
+		<div class="content">
+
+			<div class="horizontal-section-container">
+				<h2><span>{{user.username}}</span> Profile</h2>
+			</div>
+
+			<div class="horizontal-section-container">
+				<lq-card heading="User name" id="username">
+					<div class="card-content">
+						<paper-input id="username" label="Username" value="{{user.username}}"></paper-input>
+						<paper-dropdown-menu id="language" no-animations="true" placeholder="{{user.lang}}" label="Your language" tabindex="9" selected-item-label="{{user.lang}}">
+							<paper-menu class="dropdown-content">
+								<paper-item>English</paper-item>
+								<paper-item>Spanish</paper-item>
+								<paper-item>Franch</paper-item>
+								<paper-item>Italian</paper-item>
+								<paper-item>Japanese</paper-item>
+								<paper-item>Swedish</paper-item>
+							</paper-menu>
+						</paper-dropdown-menu>
+					</div>
+				</lq-card>
+			</div>
+
+			<div class="horizontal-section-container">
+				<lq-card heading="Avatar" id="avatar">
+					<div class="card-content">
+						<div class="image">
+							<iron-image style="width:180px; height:180px;"
+								id="avatar_image" sizing="contain"
+								placeholder="data:image/gif;base64,R0lGODdhyADIAOMAAO7u/5aWlqGho9jY5OPj8cLCyqyssLe3vc3N1wAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAyADIAAAE/hDISau9OOvNu/9gKI5kaZ5oqq5s675wLM90bd94ru987//AoHBILBqPyKRyyWw6n9CodEqtWq/YrHbL7Xq/4LB4TC6bz+i0es1uu9/wuHxOr9vv+Lx+z+/7/4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS06kB1tYqA9cUBQEFrgLWAgIqBOEBFNuu1gMs2ugT3d/rAe0r77bsFwMGAQLzEggc8AcQAIJwA+EBuKbQmgF+3iocDHBAXiZ9Fd6dAxhuo4R3/gwnGDgnkqE1BBM0XrN3CSOFgQYM+ouHEsFMAP1i2lQIAN8EhwS6kZPQ74BMnpZcTgiHkoA1AhKxAWDaU+pHqwvrVVVI1ScmpRIwYjxwTqo+r1vTafV6FmtSrRXEak0ooB+8tjzR4v251m0llwSgUnUaAOrJtFMDoESrty9XxYi/wk0sMEBMoRKo7iRK8SiFxu285vQMoIDR0qdNN+rmbxxJlRFLi7u22OG1mDjP4bYb2uFVf+r0CZ+cyOS1oRD/cUM4cN5EA3bDhszqWOHEhBLIZh+qHdnmaFABwIwm9BxLZxAtn6fGvr379/Djy59Pv779+/jz69/Pv7///wAGQyjggAQWaOCBCCao4IIMNujggxBGKOGEFFZo4YUYZqjhhhx26OGHIIYo4ogklmjiiSimqOKKLLbo4oswxijjjDRKEQEAOw=="
+								fade preload src="[[user_buffer.avatar]]">
+							</iron-image>
+						</div>
+						<div class="image-url">
+							<paper-input id="avatar_url" name="avatar_url" label="Avatar URL" type="url" placeholder="http://www.gravatar.com/avatar/HASH" error-message="enter a valid email address" value="{{user_buffer.avatar}}" tabindex="1"></paper-input>
+						</div>
+					</div>
+					<div class="card-actions layout horizontal">
+						<div class="flex-auto"></div>
+						<paper-button class="red" on-tap="_resetAvatar">Reset</paper-button>
+						<paper-button class="green" on-tap="_saveAvatar">Save</paper-button>
+					</div>
+				</lq-card>
+			</div>
+
+			<div class="horizontal-section-container">
+				<lq-card heading="E-mail" id="card_email">
+					<div class="card-content">
+						<paper-input id="old_email" label="Old Email*" value="{{user_reset.old_email}}" type="email"></paper-input>
+						<paper-input id="email" label="New Email*" value="{{user_reset.email}}" type="email"></paper-input>
+						<paper-input id="email_password" label="Password*" value="{{user_reset.email_password}}"
+							type="password" minlength=6
+							error-message="password must be 6 minimum characters">
+						</paper-input>
+					</div>
+					<div class="card-actions layout horizontal">
+						<div class="flex-auto"></div>
+						<paper-button class="green" on-tap="_saveEmail">Save</paper-button>
+					</div>
+				</lq-card>
+			</div>
+
+			<div class="horizontal-section-container">
+				<lq-card heading="Password" id="card_password">
+					<div class="card-content">
+						<paper-input id="old_password" label="Old password*" value="{{user_reset.old_password}}"
+							type="password" minlength=6
+							error-message="password must be 6 minimum characters">
+						</paper-input>
+						<paper-input id="password" label="New password*" value="{{user_reset.password}}"
+							type="password" minlength=6
+							error-message="password must be 6 minimum characters">
+						</paper-input>
+						<paper-input id="password_confirm" label="Re-enter password*" value="{{user_reset.password_confirm}}"
+							type="password" minlength=6
+							error-message="password must be 6 minimum characters">
+						</paper-input>
+						<paper-input id="password_email" label="Email*" value="{{user_reset.password_email}}" type="email"></paper-input>
+
+					</div>
+					<div class="card-actions layout horizontal">
+						<div class="flex-auto"></div>
+						<paper-button class="green" on-tap="_savePassword">Save</paper-button>
+					</div>
+				</lq-card>
+			</div>
+
+		<!-- content -->
+		</div>
+
+	</paper-scroll-header-panel>
+</template>
+
+<script>
+Polymer({
+	is: "lq-user-profile",
+
+	properties: {
+		user: Object,
+
+		user_buffer: {
+			type: Object,
+			value: function() {
+				return []
+			}
+		},
+
+		user_reset: {
+			type: Object,
+			value: function() {
+				return []
+			}
+		}
+	},
+
+	observers: [
+		'_verifyPassword( user_reset.old_password )',
+		'_verifyPassword( user_reset.password )',
+		'_verifyPassword( user_reset.password_confirm )',
+		'_verifyEmail( user_reset.old_email )',
+		'_verifyEmail( user_reset.email )'
+	],
+
+	reset: function() {
+		this._resetAvatar();
+	},
+
+	_verifyPassword: function() {
+		this.$.old_password.validate();
+		this.$.password.validate();
+		this.$.password_confirm.validate();
+
+		// Verify if the entered password match the other one
+		this.$.password_confirm.invalid = true;
+		if ( this.user_reset.password === this.user_reset.password_confirm ) {
+			this.$.password_confirm.invalid = false;
+		}
+
+		if ( this.user_reset.old_password && ! this.user_reset.password ) {
+			this.$.password.invalid = true;
+			this.$.password_confirm.invalid = true;
+		}
+	},
+
+	_verifyEmail: function() {
+		this.$.old_email.validate();
+		this.$.email.validate();
+
+		// Verify if the entered email match the other one
+		this.$.email.invalid = true;
+		if ( this.user_reset.old_email === this.user_reset.email ) {
+			this.$.email.invalid = false;
+		}
+	},
+
+	_resetAvatar: function() {
+		this.user_buffer.avatar = '';
+		this.set( 'user_buffer.avatar', lqMain.lq_user.avatar );
+	},
+
+	_saveAvatar: function() {
+		lqMain.set( 'lq_user.avatar', this.user_buffer.avatar );
+	},
+
+	_saveEmail: function() {
+		this.$.old_email.validate();
+		this.$.email.validate();
+		this.$.email_password.validate();
+
+		if ( this.$.old_email.validate() === false && this.$.email.validate() === false && this.$.email_password.validate() === false ) {
+			lqMain.fireToast( 'Plese, fill all the required information first.' );
+			return;
+		}
+
+		lqMain.$.firebaseLogin.changeEmail( this.user_reset.old_email, this.user_reset.email, this.user_reset.email_password );
+	},
+
+	_savePassword: function() {
+		this.$.old_password.validate();
+		this.$.password.validate();
+		this.$.password_confirm.validate();
+		this.$.password_email.validate();
+
+		if ( this.$.old_password.validate() === false && this.$.password.validate() === false && this.$.password_confirm.validate() === false && this.$.password_email.validate() ) {
+			lqMain.fireToast( 'Plese, fill all the required information first.' );
+			return;
+		}
+
+		lqMain.$.firebaseLogin.changePassword( this.user_reset.password_email, this.user_reset.old_password, this.user_reset.password_confirm );
+	},
+
+	_goBack: function( event ) {
+		this.fire( 'go-back' );
+	}
+
+});
+</script>
+</dom-module>

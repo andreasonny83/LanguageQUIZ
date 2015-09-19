@@ -1,0 +1,66 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../lq-tile/lq-tile.html">
+
+<dom-module id="lq-tile-full">
+<template>
+	<style>
+	:host {
+		display: block;
+		height: 100%;
+	}
+
+	.content {
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+	</style>
+
+	<!-- Home -->
+	<paper-scroll-header-panel condenses header-height="160" condensed-header-height="128">
+
+		<!-- Main Toolbar -->
+		<paper-toolbar class="tall">
+
+			<paper-icon-button on-tap="_goBack" icon="arrow-back"></paper-icon-button>
+			<div class="title">The LanguageQUIZ</div>
+
+		</paper-toolbar>
+
+		<!-- Main Content -->
+		<div class="content">
+
+			<div class="horizontal-section-container">
+				<h2>Collection of the month</h2>
+			</div>
+			<div class="horizontal-section-container">
+				<lq-tile large image="http://lotus.se-mc.com/image/www-static.se-mc.com/blogs.dir/0/files/2015/07/xperia-z5-camera-hybrid-af-desktop-f6cc693928982eb8a41dc345b2e9285b.jpg?wid=5000" placeholder="[[highlight_placeholder]]" sizing="cover" fade></lq-tile>
+			</div>
+
+		</div>
+
+	</paper-scroll-header-panel>
+</template>
+
+<script>
+// custom transformation: scale header's title
+addEventListener( 'paper-header-transform', function( e ) {
+	var title = document.querySelector( '.title' );
+	var d     = e.detail;
+	var m     = d.height - d.condensedHeight;
+	var scale = Math.max(0.75, ( m - d.y ) / ( m / 0.25 )  + 0.75 );
+
+	Polymer.Base.transform( 'scale(' + scale + ') translateZ(0)', title );
+});
+
+Polymer({
+	is: 'lq-tile-full',
+
+	properties: {
+	},
+
+	_goBack: function( event ) {
+		this.fire( 'go-back' );
+	}
+
+});
+</script>

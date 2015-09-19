@@ -1,0 +1,133 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="lq-card">
+<template>
+	<style>
+	:host {
+		display: inline-block;
+		position: relative;
+		box-sizing: border-box;
+
+		background: #fff;
+		border-radius: 2px;
+		@apply(--lq-card);
+	}
+
+	paper-material {
+		border-radius: inherit;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* IE 10 support for HTML5 hidden attr */
+	[hidden] {
+		display: none !important;
+	}
+
+	.header {
+		position: relative;
+		@apply(--lq-card-header);
+	}
+
+	.header iron-image {
+		width: 400px;
+		height: 400px;
+		@apply(--lq-card-header-image);
+	}
+
+	.header .title-text {
+		padding: 16px;
+		font-size: 24px;
+		font-weight: bold;
+		color: #000;
+		@apply(--lq-card-header-text);
+	}
+
+	.header .title-text.over-image {
+		position: absolute;
+		bottom: 0px;
+		@apply(--lq-card-header-image-text);
+	}
+
+	:host ::content .card-content {
+		padding: 16px;
+		position:relative;
+		@apply(--lq-card-content);
+	}
+
+	:host ::content .card-actions {
+		border-top: 1px solid #e8e8e8;
+		padding: 5px 16px;
+		position:relative;
+		@apply(--lq-card-actions);
+	}
+	</style>
+
+	<paper-material animated$="[[animatedShadow]]" elevation="[[elevation]]">
+		<div class="header">
+			<iron-image hidden$="[[!image]]" placeholder="[[placeholder]]" preload src="[[image]]" sizing="[[sizing]]" fade$="[[fade]]"></iron-image>
+			<div hidden$="[[!heading]]" class$="[[_computeHeadingClass(image)]]">[[heading]]</div>
+		</div>
+
+		<content></content>
+
+	</paper-material>
+
+</template>
+</dom-module>
+
+<script>
+Polymer({
+
+	is: 'lq-card',
+
+	properties: {
+
+	  /**
+	   * The title of the card.
+	   */
+	  heading: {
+		type: String,
+		value: '',
+		observer: '_headingChanged'
+	  },
+
+	  /**
+	   * The url of the title image of the card.
+	   */
+	  image: {
+		type: String,
+		value: ''
+	  },
+
+	  /**
+	   * The z-depth of the card, from 0-5.
+	   */
+	  elevation: {
+		type: Number,
+		value: 1
+	  },
+
+	  /**
+	   * Set this to true to animate the card shadow when setting a new
+	   * `z` value.
+	   */
+	  animatedShadow: {
+		type: Boolean,
+		value: false
+	  }
+	},
+
+	_headingChanged: function( heading ) {
+		var label = this.getAttribute( 'aria-label' );
+		this.setAttribute( 'aria-label', heading );
+	},
+
+	_computeHeadingClass: function( image ) {
+		var cls = 'title-text';
+		if (image)
+			cls += ' over-image';
+		return cls;
+	}
+});
+</script>

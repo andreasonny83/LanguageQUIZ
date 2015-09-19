@@ -1,0 +1,133 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="lq-main">
+<template>
+	<style include="lq-shared-styles">
+	:host {
+		display: block;
+		height: 100%;
+	}
+	</style>
+	<neon-animated-pages id="pages" class="flex" selected="[[selected]]" entry-animation="[[entryAnimation]]" exit-animation="[[exitAnimation]]">
+
+		<lq-login id="lqLogin" on-log-out="_logOut"></lq-login>
+		<lq-home-page id="lqHome" user-data="[[lq_user]]" collections="{{collections}}" on-tile-click="_onCollection" on-user-profile="_userProfile" on-log-out="_logOut" on-user-profile="_userProfile"></lq-home-page>
+		<lq-tile-full id="lqTile" on-go-back="_goBack"></lq-tile-full>
+		<lq-user-profile id="lqUserProfile" user="{{lq_user}}" on-go-back="_goBack"></lq-user-profile>
+
+	</neon-animated-pages>
+
+	<paper-toast id="toast"></paper-toast>
+	<lq-page-loading id="spinner"></lq-page-loading>
+
+	<firebase-auth id="firebaseLogin" location="[[apiDir]]" provider="password" user="{{user}}" on-login="userLoggedIn" on-user-created="userRegistered" on-logout="userLoggedOut" on-error="firebaseError" on-password-changed="passwordChanged" on-email-changed="emailChanged" on-password-reset="passwordReset"></firebase-auth>
+
+	<firebase-document id="lqUser" location="[[location]]" data="{{lq_user}}"></firebase-document>
+	<firebase-collection id="lqCollections" location="[[collections_location]]" data="{{collections}}"></firebase-collection>
+</template>
+
+<script>
+
+Polymer({
+	is: 'lq-main',
+
+	properties: {
+		appDir: {
+			type: String,
+			value: "http://localhost:8888/TheLanguageQUIZ/dist/"
+		},
+
+		apiDir: {
+			type: String,
+			value: "https://glowing-inferno-822.firebaseio.com"
+		},
+
+		user_registration: false,
+
+		reg_info: Object,
+
+		lq_user: Object,
+		notify: true
+	},
+
+	/**
+	 * Fire a toast message
+	 * If busy, queue the request and retry after 500 milliseconds.
+	 * @param String message
+	 */
+	fireToast: function( message ) {
+		if ( ! toast.visible ) {
+			toast.text = message;
+			toast.show();
+		}
+		else {
+			setTimeout( function() {
+				lqMain.fireToast( message );
+			}, 500);
+		}
+	},
+
+	userRegistered: function() {
+		lqMain.fireToast( 'You are now registerd. Logging in...' );
+		this.user_registration = true;
+		this.reg_info = {
+			username: lqLogin.reg.name,
+			lang: lqLogin.reg.lang
+		};
+
+		this.$.firebaseLogin.login({email:lqLogin.reg.email, password:lqLogin.reg.password});
+	},
+
+	userLoggedIn: function() {
+		if ( this.user_registration ) {
+			// Store the new user inside the users table
+			var usersRef = this.$.firebaseLogin.ref.child( "users" ).child( this.user.uid );
+			usersRef.set( this.reg_info );
+		}
+
+		lqMain.selected = 1;
+		lqLogin.resetFields();
+
+		this.fireToast( 'You are now logged in.' );
+		this.location = this.apiDir + '/users/' + this.user.uid;
+		this.collections_location = this.apiDir + '/collections/';
+	},
+
+	passwordChanged: function() {
+		this.fireToast( 'Your new password has been saved.' );
+		lqUserProfile.user_reset = {};
+	},
+
+	emailChanged: function() {
+		this.fireToast( 'Your new email has been saved.' );
+		lqUserProfile.user_reset = {};
+	},
+
+	_userProfile: function() {
+		lqMain.selected = 3;
+		lqUserProfile.reset();
+	},
+
+	_goBack: function() {
+		lqMain.selected = 1;
+	},
+
+	_logOut: function() {
+		this.$.firebaseLogin.logout();
+	},
+
+	userLoggedOut: function() {
+		lqMain.selected = 0;
+		lqMain.fireToast( 'You are now logged out.' );
+	},
+
+	passwordReset: function() {
+		lqMain.fireToast( 'Your new password has been sent to your email address.' );
+	},
+
+	firebaseError: function( error, message ) {
+		lqMain.fireToast( message );
+	}
+});
+</script>
+</dom-module>

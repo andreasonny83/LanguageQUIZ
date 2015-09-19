@@ -1,0 +1,236 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../lq-tile/lq-tile.html">
+
+<dom-module id="lq-home-page">
+<template>
+	<style include="lq-shared-styles">
+	:host {
+		display: block;
+		height: 100%;
+	}
+
+	#searchBox {
+		visibility: hidden;
+		width: 90%;
+		max-width: 1100px;
+		height: 50px;
+		margin: 0 auto;
+		padding: 0 15px;
+		line-height: 50px;
+		font-size: 26px;
+		text-transform: lowercase;
+		outline: none;
+		border: none;
+		border-radius: 3px;
+		background-color: rgba(255, 255, 255, 0.95);
+		box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.52);
+		-webkit-user-select: none;
+		opacity: 0;
+		-webkit-transition: all .5s;
+		transition: all .5s;
+		transform: translateY(-10px);
+	}
+
+	paper-icon-button.bottom {
+		-webkit-transition: transform .5s;
+		transition: transform .5s;
+	}
+
+	paper-toolbar[search] #searchBox {
+		visibility: visible;
+		opacity: 1;
+		transform: translateY(28px);
+	}
+
+	paper-toolbar[search] paper-icon-button.right {
+		transform: translateX(80px);
+	}
+
+	paper-toolbar[search] paper-icon-button.left {
+		transform: translateX(-80px);
+	}
+
+	paper-menu-button {
+		padding: 0;
+	}
+
+	.avatar {
+		--iron-icon-height: 40px;
+		--iron-icon-width: 40px;
+		--paper-icon-button: {
+			padding: 5px;
+		};
+	}
+
+	.avatar ::content iron-icon {
+		border: 2px solid #fff;
+		border-radius: 50%;
+	}
+
+	.avatar ::content iron-icon img {
+		border-radius: 50%;
+	}
+
+	.content {
+		max-width: 1400px;
+		margin: 0 auto;
+		height: 3000px;
+	}
+
+	lq-tile {
+		cursor: pointer;
+	}
+
+	lq-tile[small] {
+		--lq-tile: {
+			width: calc(33.33% - 24px);
+		};
+		--lq-card-header-image: {
+			width: 100%;
+			max-width: 440px;
+			height: 250px;
+		};
+		--lq-card-header-text: {
+			padding: 8px 12px;
+			background-color: rgba(255,255,255,0.5);
+		};
+	}
+
+	lq-tile[large] {
+		--lq-tile: {
+			width: 100%;
+		};
+
+		--lq-card-header-image: {
+			width: 50%;
+			height: 250px;
+		};
+	}
+
+	@media all and (max-width: 639px) {
+		#searchBox {
+			height: 48px;
+			line-height: 48px;
+			font-size: 24px;
+		}
+
+		paper-toolbar[search] #searchBox {
+			transform: translateY(40px);
+		}
+
+		lq-tile[small] {
+			width: 100%;
+
+			--lq-card-header-image: {
+				width: 100%;
+				height: 250px;
+			};
+		}
+	}
+
+	@media all and (min-width: 601px) and (max-width: 900px) {
+		lq-tile[small] {
+			width: calc(50% - 24px);
+
+			--lq-card-header-image: {
+				width: 100%;
+				height: 250px;
+			};
+		}
+	}
+	</style>
+
+	<!-- Home -->
+	<paper-scroll-header-panel condenses header-height="160" condensed-header-height="128">
+
+		<!-- Main Toolbar -->
+		<paper-toolbar class="tall" search$={{search}}>
+			<paper-menu-button>
+				<paper-icon-button src="[[userData.avatar]]" class="dropdown-trigger avatar"></paper-icon-button>
+					<paper-menu class="dropdown-content">
+					<paper-item on-tap="_userProfile">Profile settings</paper-item>
+					<paper-item>Private collections</paper-item>
+					<paper-item>Options</paper-item>
+					<paper-item on-tap="_logOut">Log Out</paper-item>
+				</paper-menu>
+			</paper-menu-button><span>[[userData.username]]</span>
+			<div class="title">The LanguageQUIZ</div>
+			<paper-icon-button on-tap="searchToggle" icon="search"></paper-icon-button>
+
+			<input type="text" class="middle" id="searchBox" maxlength="30" value="{{searchString::input}}" placeholder="Search a collection">
+
+			<paper-icon-button class="bottom left social" icon="assessment"></paper-icon-button>
+			<div class="bottom flex"></div>
+			<paper-icon-button class="bottom right favorite" icon="favorite"></paper-icon-button>
+
+		</paper-toolbar>
+
+		<!-- Main Content -->
+		<div class="content">
+
+			<div class="horizontal-section-container">
+				<h2>Collection of the month</h2>
+			</div>
+			<div class="horizontal-section-container">
+				<lq-tile large image="http://lotus.se-mc.com/image/www-static.se-mc.com/blogs.dir/0/files/2015/07/xperia-z5-camera-hybrid-af-desktop-f6cc693928982eb8a41dc345b2e9285b.jpg?wid=5000" placeholder="[[highlight_placeholder]]" sizing="cover" fade></lq-tile>
+			</div>
+
+			<div class="horizontal-section-container">
+				<h2>Collections from the world</h2>
+			</div>
+			<div class="horizontal-section-container">
+				<!-- <array-selector id="selector" items="[[collections]]" selected="[[collectionsSelected]]" multi toggle></array-selector> -->
+
+				<!-- <template id="collectionsList" is="dom-repeat" items="[[collectionsSelected]]" as="collection" filter="filterCollections">
+					<lq-tile small id="[[collection.uid]]"
+						title="[[collection.name]]"
+						placeholder="[[tile_placeholder]]" sizing="cover" fade>
+						<p class="description">[[collection.description]]</p>
+					</lq-tile>
+				</template> -->
+				<template id="collectionsList" is="dom-repeat" items="[[collections]]" as="collection">
+					<lq-tile small id="[[collection.uid]]"
+						title="[[collection.name]]"
+						placeholder="[[tile_placeholder]]" sizing="cover" fade>
+						<p class="description">[[collection.description]]</p>
+					</lq-tile>
+				</template>
+
+				<lq-tile id="tileLoading" loading></lq-tile>
+			</div>
+		</div>
+
+	</paper-scroll-header-panel>
+</template>
+
+<script>
+// custom transformation: scale header's title
+addEventListener( 'paper-header-transform', function( e ) {
+	var title = document.querySelector( '.title' );
+	var d     = e.detail;
+	var m     = d.height - d.condensedHeight;
+	var scale = Math.max(0.75, ( m - d.y ) / ( m / 0.25 )  + 0.75 );
+
+	Polymer.Base.transform( 'scale(' + scale + ') translateZ(0)', title );
+});
+
+Polymer({
+	is: 'lq-home-page',
+
+	properties: {
+		location: {
+			type: String,
+			value: ''
+		}
+	},
+
+	_userProfile: function() {
+		this.fire( 'user-profile' );
+	},
+
+	_logOut: function() {
+		this.fire( 'log-out' );
+	}
+
+});
+</script>
