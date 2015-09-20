@@ -1,42 +1,41 @@
 <!--
 @license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
 
 <script src="../../bower_components/page/page.js"></script>
 <script>
-window.addEventListener( 'WebComponentsReady', function() {
 
-	// We use Page.js for routing. This is a Micro
-	// client-side router inspired by the Express router
-	// More info: https://visionmedia.github.io/page.js/
-	page('/', function () {
-		lqMain.selected = 0;
-		lqLogin.init();
+  window.addEventListener('WebComponentsReady', function() {
+    var lqMain        = document.querySelector( '#lqMain' );
+    var lqUserProfile = document.querySelector( '#lqUserProfile' );
+
+    // page.base( 'http://localhost:8888/polymer/dist');
+    // page.base( 'http://sonnywebdesign.com/languagequiz');
+    page.base( './');
+
+    page('/', function () {
+        lqMain.selected = 0;
+    });
+
+    page('/home', function () {
+        lqMain.selected = 1;
+    });
+
+    page( '/profile', function () {
+		lqMain.selected = 3;
+		lqUserProfile.reset();
 	});
 
-	page('/home', function () {
-		lqMain.selected = 1;
+	page( '/new-collection', function () {
+		lqMain.selected = 2;
 	});
 
-	// page('/users/:name', function (data) {
-	// 	lqMain.selected = 'user-info';
-	// 	lqMain.params = data.params;
-	// });
-    //
-	// page('/contact', function () {
-	// 	lqMain.selected = 'contact';
-	// });
+    page('*', function () {
+        lqMain.selected = 0;
+    });
 
-	// add #! before urls
-	page({
-		hashbang: true
-	});
+    page();
 
-});
+  });
 </script>

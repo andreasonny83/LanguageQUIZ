@@ -1,3 +1,8 @@
+<!--
+@license
+Copyright (c) 2015 LanguageQUIZ. All rights reserved.
+-->
+
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="lq-user-profile">
@@ -106,11 +111,11 @@
 							<iron-image style="width:180px; height:180px;"
 								id="avatar_image" sizing="contain"
 								placeholder="data:image/gif;base64,R0lGODdhyADIAOMAAO7u/5aWlqGho9jY5OPj8cLCyqyssLe3vc3N1wAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAAyADIAAAE/hDISau9OOvNu/9gKI5kaZ5oqq5s675wLM90bd94ru987//AoHBILBqPyKRyyWw6n9CodEqtWq/YrHbL7Xq/4LB4TC6bz+i0es1uu9/wuHxOr9vv+Lx+z+/7/4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS06kB1tYqA9cUBQEFrgLWAgIqBOEBFNuu1gMs2ugT3d/rAe0r77bsFwMGAQLzEggc8AcQAIJwA+EBuKbQmgF+3iocDHBAXiZ9Fd6dAxhuo4R3/gwnGDgnkqE1BBM0XrN3CSOFgQYM+ouHEsFMAP1i2lQIAN8EhwS6kZPQ74BMnpZcTgiHkoA1AhKxAWDaU+pHqwvrVVVI1ScmpRIwYjxwTqo+r1vTafV6FmtSrRXEak0ooB+8tjzR4v251m0llwSgUnUaAOrJtFMDoESrty9XxYi/wk0sMEBMoRKo7iRK8SiFxu285vQMoIDR0qdNN+rmbxxJlRFLi7u22OG1mDjP4bYb2uFVf+r0CZ+cyOS1oRD/cUM4cN5EA3bDhszqWOHEhBLIZh+qHdnmaFABwIwm9BxLZxAtn6fGvr379/Djy59Pv779+/jz69/Pv7///wAGQyjggAQWaOCBCCao4IIMNujggxBGKOGEFFZo4YUYZqjhhhx26OGHIIYo4ogklmjiiSimqOKKLLbo4oswxijjjDRKEQEAOw=="
-								fade preload src="[[user_buffer.avatar]]">
+								fade preload src="[[userBuffer.avatar]]">
 							</iron-image>
 						</div>
 						<div class="image-url">
-							<paper-input id="avatar_url" name="avatar_url" label="Avatar URL" type="url" placeholder="http://www.gravatar.com/avatar/HASH" error-message="enter a valid email address" value="{{user_buffer.avatar}}" tabindex="1"></paper-input>
+							<paper-input id="avatar_url" name="avatar_url" label="Avatar URL" type="url" placeholder="http://www.gravatar.com/avatar/HASH" error-message="enter a valid email address" value="{{userBuffer.avatar}}" tabindex="1"></paper-input>
 						</div>
 					</div>
 					<div class="card-actions layout horizontal">
@@ -124,9 +129,9 @@
 			<div class="horizontal-section-container">
 				<lq-card heading="E-mail" id="card_email">
 					<div class="card-content">
-						<paper-input id="old_email" label="Old Email*" value="{{user_reset.old_email}}" type="email"></paper-input>
-						<paper-input id="email" label="New Email*" value="{{user_reset.email}}" type="email"></paper-input>
-						<paper-input id="email_password" label="Password*" value="{{user_reset.email_password}}"
+						<paper-input id="oldEmail" label="Old Email*" value="{{userReset.oldEmail}}" type="email"></paper-input>
+						<paper-input id="email" label="New Email*" value="{{userReset.email}}" type="email"></paper-input>
+						<paper-input id="emailPassword" label="Password*" value="{{userReset.emailPassword}}"
 							type="password" minlength=6
 							error-message="password must be 6 minimum characters">
 						</paper-input>
@@ -141,19 +146,19 @@
 			<div class="horizontal-section-container">
 				<lq-card heading="Password" id="card_password">
 					<div class="card-content">
-						<paper-input id="old_password" label="Old password*" value="{{user_reset.old_password}}"
+						<paper-input id="oldPassword" label="Old password*" value="{{userReset.oldPassword}}"
 							type="password" minlength=6
 							error-message="password must be 6 minimum characters">
 						</paper-input>
-						<paper-input id="password" label="New password*" value="{{user_reset.password}}"
+						<paper-input id="password" label="New password*" value="{{userReset.password}}"
 							type="password" minlength=6
 							error-message="password must be 6 minimum characters">
 						</paper-input>
-						<paper-input id="password_confirm" label="Re-enter password*" value="{{user_reset.password_confirm}}"
+						<paper-input id="passwordConfirm" label="Re-enter password*" value="{{userReset.passwordConfirm}}"
 							type="password" minlength=6
 							error-message="password must be 6 minimum characters">
 						</paper-input>
-						<paper-input id="password_email" label="Email*" value="{{user_reset.password_email}}" type="email"></paper-input>
+						<paper-input id="passwordEmail" label="Email*" value="{{userReset.passwordEmail}}" type="email"></paper-input>
 
 					</div>
 					<div class="card-actions layout horizontal">
@@ -170,33 +175,35 @@
 </template>
 
 <script>
+var lqMain = document.querySelector( '#lqMain' );
+
 Polymer({
-	is: "lq-user-profile",
+	is: 'lq-user-profile',
 
 	properties: {
 		user: Object,
 
-		user_buffer: {
+		userBuffer: {
 			type: Object,
 			value: function() {
-				return []
+				return [];
 			}
 		},
 
-		user_reset: {
+		userReset: {
 			type: Object,
 			value: function() {
-				return []
+				return [];
 			}
 		}
 	},
 
 	observers: [
-		'_verifyPassword( user_reset.old_password )',
-		'_verifyPassword( user_reset.password )',
-		'_verifyPassword( user_reset.password_confirm )',
-		'_verifyEmail( user_reset.old_email )',
-		'_verifyEmail( user_reset.email )'
+		'_verifyPassword( userReset.oldPassword )',
+		'_verifyPassword( userReset.password )',
+		'_verifyPassword( userReset.passwordConfirm )',
+		'_verifyEmail( userReset.oldEmail )',
+		'_verifyEmail( userReset.email )'
 	],
 
 	reset: function() {
@@ -204,70 +211,70 @@ Polymer({
 	},
 
 	_verifyPassword: function() {
-		this.$.old_password.validate();
+		this.$.oldPassword.validate();
 		this.$.password.validate();
-		this.$.password_confirm.validate();
+		this.$.passwordConfirm.validate();
 
 		// Verify if the entered password match the other one
-		this.$.password_confirm.invalid = true;
-		if ( this.user_reset.password === this.user_reset.password_confirm ) {
-			this.$.password_confirm.invalid = false;
+		this.$.passwordConfirm.invalid = true;
+		if ( this.userReset.password === this.userReset.passwordConfirm ) {
+			this.$.passwordConfirm.invalid = false;
 		}
 
-		if ( this.user_reset.old_password && ! this.user_reset.password ) {
+		if ( this.userReset.oldPassword && ! this.userReset.password ) {
 			this.$.password.invalid = true;
-			this.$.password_confirm.invalid = true;
+			this.$.passwordConfirm.invalid = true;
 		}
 	},
 
 	_verifyEmail: function() {
-		this.$.old_email.validate();
+		this.$.oldEmail.validate();
 		this.$.email.validate();
 
 		// Verify if the entered email match the other one
 		this.$.email.invalid = true;
-		if ( this.user_reset.old_email === this.user_reset.email ) {
+		if ( this.userReset.oldEmail === this.userReset.email ) {
 			this.$.email.invalid = false;
 		}
 	},
 
 	_resetAvatar: function() {
-		this.user_buffer.avatar = '';
-		this.set( 'user_buffer.avatar', lqMain.lq_user.avatar );
+		this.userBuffer.avatar = '';
+		this.set( 'userBuffer.avatar', lqMain.lqUser.avatar );
 	},
 
 	_saveAvatar: function() {
-		lqMain.set( 'lq_user.avatar', this.user_buffer.avatar );
+		lqMain.set( 'lqUser.avatar', this.userBuffer.avatar );
 	},
 
 	_saveEmail: function() {
-		this.$.old_email.validate();
+		this.$.oldEmail.validate();
 		this.$.email.validate();
-		this.$.email_password.validate();
+		this.$.emailPassword.validate();
 
-		if ( this.$.old_email.validate() === false && this.$.email.validate() === false && this.$.email_password.validate() === false ) {
+		if ( this.$.oldEmail.validate() === false && this.$.email.validate() === false && this.$.emailPassword.validate() === false ) {
 			lqMain.fireToast( 'Plese, fill all the required information first.' );
 			return;
 		}
 
-		lqMain.$.firebaseLogin.changeEmail( this.user_reset.old_email, this.user_reset.email, this.user_reset.email_password );
+		lqMain.$.firebaseLogin.changeEmail( this.userReset.oldEmail, this.userReset.email, this.userReset.emailPassword );
 	},
 
 	_savePassword: function() {
-		this.$.old_password.validate();
+		this.$.oldPassword.validate();
 		this.$.password.validate();
-		this.$.password_confirm.validate();
-		this.$.password_email.validate();
+		this.$.passwordConfirm.validate();
+		this.$.passwordEmail.validate();
 
-		if ( this.$.old_password.validate() === false && this.$.password.validate() === false && this.$.password_confirm.validate() === false && this.$.password_email.validate() ) {
+		if ( this.$.oldPassword.validate() === false && this.$.password.validate() === false && this.$.passwordConfirm.validate() === false && this.$.passwordEmail.validate() ) {
 			lqMain.fireToast( 'Plese, fill all the required information first.' );
 			return;
 		}
 
-		lqMain.$.firebaseLogin.changePassword( this.user_reset.password_email, this.user_reset.old_password, this.user_reset.password_confirm );
+		lqMain.$.firebaseLogin.changePassword( this.userReset.passwordEmail, this.userReset.oldPassword, this.userReset.passwordConfirm );
 	},
 
-	_goBack: function( event ) {
+	_goBack: function() {
 		this.fire( 'go-back' );
 	}
 

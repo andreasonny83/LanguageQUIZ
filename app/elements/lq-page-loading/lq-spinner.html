@@ -33,7 +33,7 @@ Polymer({
 			type: Boolean,
 			value: false,
 			reflectToAttribute: true,
-			observer: "_activateChanged"
+			observer: '_activateChanged'
 		},
 
 		busy: {
@@ -58,7 +58,7 @@ Polymer({
 						name: 'scale-down-animation',
 						node: this
 					}
-				}
+				};
 			}
 		}
 	},
@@ -68,7 +68,9 @@ Polymer({
 	},
 
 	_activateChanged: function( e ) {
-		if ( this.queue === undefined ) return;
+		if ( this.queue === undefined ) {
+			return;
+		}
 
 		this.queue = this.queue + 1;
 
@@ -77,14 +79,20 @@ Polymer({
 		}, 250 );
 	},
 
-	analizeRequest: function( e ) {
+	analizeRequest: function() {
 		this.queue = this.queue - 1;
 
-		if ( this.queue > 0 ) return;
+		if ( this.queue > 0 ) {
+			return;
+		}
 
 		// If the status is still the same, exit
-		if ( this.style.display === 'block' && this.active ) return;
-		if ( this.style.display === 'none' && ! this.active ) return;
+		if ( this.style.display === 'block' && this.active ) {
+			return;
+		}
+		if ( this.style.display === 'none' && ! this.active ) {
+			return;
+		}
 
 		if ( this.active ) {
 			this.style.display = 'block';

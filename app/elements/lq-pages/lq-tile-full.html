@@ -1,5 +1,9 @@
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../lq-tile/lq-tile.html">
+<!--
+@license
+Copyright (c) 2015 LanguageQUIZ. All rights reserved.
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="lq-tile-full">
 <template>
@@ -58,7 +62,7 @@ Polymer({
 	properties: {
 	},
 
-	_goBack: function( event ) {
+	_goBack: function() {
 		this.fire( 'go-back' );
 	}
 

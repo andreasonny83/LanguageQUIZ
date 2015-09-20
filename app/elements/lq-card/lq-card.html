@@ -119,14 +119,16 @@ Polymer({
 	},
 
 	_headingChanged: function( heading ) {
-		var label = this.getAttribute( 'aria-label' );
+		// var label = this.getAttribute( 'aria-label' );
 		this.setAttribute( 'aria-label', heading );
 	},
 
 	_computeHeadingClass: function( image ) {
 		var cls = 'title-text';
-		if (image)
+		if (image) {
 			cls += ' over-image';
+		}
+
 		return cls;
 	}
 });

@@ -1,3 +1,8 @@
+<!--
+@license
+Copyright (c) 2015 LanguageQUIZ. All rights reserved.
+-->
+
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="lq-login">
@@ -8,7 +13,7 @@
 	}
 
 	lq-card {
-		width: 500px;
+		width: 550px;
 
 		--lq-card-actions: {
 			text-align: right;
@@ -42,16 +47,30 @@
 	<div class="horizontal-section-container hero">
 		<lq-card id="card_login" heading="Log In">
 			<div class="card-content">
-				<paper-input id="login_email" name="username" required label="E-mail" autofocus type="email" error-message="enter a valid email address" value="{{email}}" tabindex="1"></paper-input>
-				<paper-input id="login_password" name="password" label="Password" required minlength=6 type="password" error-message="password must be 6 minimum characters" value="{{password}}" tabindex="2"></paper-input>
+				<paper-input id="loginEmail" name="username" required label="E-mail" autofocus type="email" error-message="enter a valid email address" value="{{email}}" ></paper-input>
+				<paper-input id="loginPassword" name="password" label="Password" required minlength=6 type="password" error-message="password must be 6 minimum characters" value="{{password}}" ></paper-input>
 			</div>
 			<div class="card-actions">
-				<paper-button class="orange" on-tap="password_reset" tabindex="4">
+				<paper-button class="orange" on-tap="passwordReset" >
 					reset password
 				</paper-button>
-				<paper-button class="green" on-tap="login" tabindex="3">
+				<paper-button class="green" on-tap="login">
 					<iron-icon icon="check"></iron-icon>
 					ok
+				</paper-button>
+			</div>
+			<div class="card-actions">
+				<paper-button on-tap="" disabled>
+					Google+
+				</paper-button>
+				<paper-button on-tap="" disabled>
+					Facebook
+				</paper-button>
+				<paper-button on-tap="" disabled>
+					Twitter
+				</paper-button>
+				<paper-button on-tap="" disabled>
+					GitHub
 				</paper-button>
 			</div>
 
@@ -67,12 +86,12 @@
 	<div class="horizontal-section-container hero">
 		<lq-card id="card_register" heading="Register">
 			<div class="card-content">
-				<paper-input id="reg_name" type="text" label="User name*" required pattern="[a-zA-Z0-9\s]+" minlength=5 value="{{reg.name}}" error-message="letters and number only. Minimun of 5 charaters" tabindex="4"></paper-input>
-				<paper-input id="reg_email" type="text" label="Email*" required value="{{reg.email}}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" error-message="enter a valid email address" tabindex="5"></paper-input>
-				<paper-input id="reg_email_confirm" type="text" label="Re-enter email*" required value="{{reg.email_confirm}}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" error-message="email address doesn't match" tabindex="6"></paper-input>
-				<paper-input id="reg_password" type="password" label="Password*" required pattern=".{6,}" value="{{reg.password}}" error-message="password must be 6 characters minimum." tabindex="7"></paper-input>
-				<paper-input id="reg_password_confirm" type="password" required label="Re-enter password*" minlength=6 value="{{reg.password_confirm}}" error-message="password doesn't match" tabindex="8"></paper-input>
-				<paper-dropdown-menu id="language" no-animations="true" label="Your language" tabindex="9" selected-item-label="{{reg.lang}}">
+				<paper-input id="regName" type="text" label="User name*" required pattern="[a-zA-Z0-9\s]+" minlength=5 value="{{reg.name}}" error-message="letters and number only. Minimun of 5 charaters" ></paper-input>
+				<paper-input id="regEmail" type="text" label="Email*" required value="{{reg.email}}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" error-message="enter a valid email address" ></paper-input>
+				<paper-input id="regEmailConfirm" type="text" label="Re-enter email*" required value="{{reg.emailConfirm}}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" error-message="email address doesn't match" ></paper-input>
+				<paper-input id="regPassword" type="password" label="Password*" required pattern=".{6,}" value="{{reg.password}}" error-message="password must be 6 characters minimum." ></paper-input>
+				<paper-input id="regPasswordConfirm" type="password" required label="Re-enter password*" minlength=6 value="{{reg.passwordConfirm}}" error-message="password doesn't match" ></paper-input>
+				<paper-dropdown-menu id="language" no-animations="true" label="Your language"  selected-item-label="{{reg.lang}}">
 					<paper-menu class="dropdown-content">
 						<paper-item>English</paper-item>
 						<paper-item>Spanish</paper-item>
@@ -85,7 +104,7 @@
 			</div>
 			<div class="card-actions">
 				<paper-button class="green" on-tap="register">
-					<iron-icon icon="check" tabindex="10"></iron-icon>
+					<iron-icon icon="check"></iron-icon>
 					Register
 				</paper-button>
 			</div>
@@ -116,6 +135,8 @@
 </template>
 
 <script>
+var lqMain = document.querySelector( '#lqMain' );
+
 Polymer({
 	is: 'lq-login',
 
@@ -125,8 +146,8 @@ Polymer({
 
 	observers: [
 		'_verifyName( reg.name )',
-		'_verifyEmail( reg.email, reg.email_confirm )',
-		'_verifyPassword( reg.password, reg.password_confirm )'
+		'_verifyEmail( reg.email, reg.emailConfirm )',
+		'_verifyPassword( reg.password, reg.passwordConfirm )'
 	],
 
 	attached: function() {
@@ -135,7 +156,9 @@ Polymer({
 
 	init: function() {
 		this.resetFields();
-		lqMain.$.spinner.active = false; //loading
+		// if ( lqMain.$.firebaseLogin.statusKnown ) {
+		// 	page( '/home' );
+		// }
 	},
 
 	/**
@@ -147,69 +170,73 @@ Polymer({
 		this.reg      = {
 			name:             '',
 			email:            '',
-			email_confirm:    '',
+			emailConfirm:    '',
 			password:         '',
-			password_confirm: '',
+			passwordConfirm: '',
 			lang:             ''
 		};
 
-		this.$.reg_name.invalid = false;
-		this.$.reg_email.invalid = false;
-		this.$.reg_email_confirm.invalid = false;
-		this.$.reg_password.invalid = false;
-		this.$.reg_password_confirm.invalid = false;
+		this.$.regName.invalid = false;
+		this.$.regEmail.invalid = false;
+		this.$.regEmailConfirm.invalid = false;
+		this.$.regPassword.invalid = false;
+		this.$.regPasswordConfirm.invalid = false;
 	},
 
 	_verifyName() {
-		this.$.reg_name.validate();
+		this.$.regName.validate();
 	},
 
-	_verifyEmail: function( email, email_confirm ) {
-		this.$.reg_email.validate();
+	_verifyEmail: function( email, emailConfirm ) {
+		this.$.regEmail.validate();
 
 		// return error if the value is not matching the element requirements
-		this.$.reg_email_confirm.validate();
-		if ( this.$.reg_email_confirm.invalid ) return;
+		this.$.regEmailConfirm.validate();
+		if ( this.$.regEmailConfirm.invalid ) {
+			return;
+		}
 
 		// Verify if the entered email match the other one
-		this.$.reg_email_confirm.invalid = true;
+		this.$.regEmailConfirm.invalid = true;
 
-		if ( email === email_confirm ) {
-			this.$.reg_email_confirm.invalid = false;
+		if ( email === emailConfirm ) {
+			this.$.regEmailConfirm.invalid = false;
 		}
 	},
 
-	_verifyPassword: function( password, password_confirm ) {
-		this.$.reg_password.validate();
+	_verifyPassword: function( password, passwordConfirm ) {
+		this.$.regPassword.validate();
 
 		// return error if the value is not matching the element requirements
-		this.$.reg_password_confirm.validate();
+		this.$.regPasswordConfirm.validate();
 
-		if ( this.$.reg_password_confirm.invalid ) return;
+		if ( this.$.regPasswordConfirm.invalid ) {
+			return;
+		}
 
 		// Verify if the entered password match the other one
-		this.$.reg_password_confirm.invalid = true;
+		this.$.regPasswordConfirm.invalid = true;
 
-		if ( password === password_confirm ) {
-			this.$.reg_password_confirm.invalid = false;
+		if ( password === passwordConfirm ) {
+			this.$.regPasswordConfirm.invalid = false;
 		}
 	},
 
 	register: function() {
 		this.reg.lang = this.$.language.selectedItemLabel;
-		this.$.reg_name.validate();
-		this.$.reg_email.validate();
-		this.$.reg_email_confirm.validate();
-		this.$.reg_password.validate();
-		this.$.reg_password_confirm.validate();
+		this.$.regName.validate();
+		this.$.regEmail.validate();
+		this.$.regEmailConfirm.validate();
+		this.$.regPassword.validate();
+		this.$.regPasswordConfirm.validate();
 
 		if ( ! this.reg.lang ) {
-			lqMain.fireToast( "Please, select your language first." );
+			lqMain.fireToast( 'Please, select your language first.' );
 			return;
 		}
 
-		if ( this.$.reg_name.invalid || this.$.reg_email.invalid || this.$.reg_email_confirm.invalid || this.$.reg_password.invalid || this.$.reg_password_confirm.invalid ) {
-			lqMain.fireToast( "Please, fix the wrong information and try again." );
+		if ( this.$.regName.invalid || this.$.regEmail.invalid || this.$.regEmailConfirm.invalid || this.$.regPassword.invalid || this.$.regPasswordConfirm.invalid ) {
+			lqMain.fireToast( 'Please, fix the wrong information and try again.' );
 			return;
 		}
 
@@ -221,18 +248,18 @@ Polymer({
 	 * then send the Ajax request to the API
 	 */
 	login: function() {
-		this.$.login_email.validate();
-		this.$.login_password.validate();
+		this.$.loginEmail.validate();
+		this.$.loginPassword.validate();
 
-		if ( this.email.length > 0 && this.password.length > 0 && this.$.login_email.validate() && this.$.login_password.validate() ) {
+		if ( this.email.length > 0 && this.password.length > 0 && this.$.loginEmail.validate() && this.$.loginPassword.validate() ) {
 			lqMain.$.firebaseLogin.login({email:this.email, password:this.password});
 		}
 		else {
-			lqMain.fireToast( "Please, check the entered details and try again." );
+			lqMain.fireToast( 'Please, check the entered details and try again.' );
 		}
 	},
 
-	password_reset: function() {
+	passwordReset: function() {
 		lqMain.$.firebaseLogin.sendPasswordResetEmail(this.email);
 	}
 

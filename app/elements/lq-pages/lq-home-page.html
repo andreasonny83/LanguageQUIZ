@@ -1,5 +1,9 @@
+<!--
+@license
+Copyright (c) 2015 LanguageQUIZ. All rights reserved.
+-->
+
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../lq-tile/lq-tile.html">
 
 <dom-module id="lq-home-page">
 <template>
@@ -42,8 +46,12 @@
 		transform: translateY(28px);
 	}
 
+	paper-toolbar[search] #searchBox.float {
+		transform: translateY(100px);
+	}
+
 	paper-toolbar[search] paper-icon-button.right {
-		transform: translateX(80px);
+		transform: translateX(120px);
 	}
 
 	paper-toolbar[search] paper-icon-button.left {
@@ -161,6 +169,7 @@
 
 			<paper-icon-button class="bottom left social" icon="assessment"></paper-icon-button>
 			<div class="bottom flex"></div>
+			<paper-icon-button class="bottom right add" icon="add-circle" on-tap="_newCollection"></paper-icon-button>
 			<paper-icon-button class="bottom right favorite" icon="favorite"></paper-icon-button>
 
 		</paper-toolbar>
@@ -188,7 +197,7 @@
 						<p class="description">[[collection.description]]</p>
 					</lq-tile>
 				</template> -->
-				<template id="collectionsList" is="dom-repeat" items="[[collections]]" as="collection">
+				<template id="collectionsList" is="dom-repeat" items="[[collections]]" as="collection" filter="filterCollections">
 					<lq-tile small id="[[collection.uid]]"
 						title="[[collection.name]]"
 						placeholder="[[tile_placeholder]]" sizing="cover" fade>
@@ -212,6 +221,13 @@ addEventListener( 'paper-header-transform', function( e ) {
 	var scale = Math.max(0.75, ( m - d.y ) / ( m / 0.25 )  + 0.75 );
 
 	Polymer.Base.transform( 'scale(' + scale + ') translateZ(0)', title );
+
+	if ( d.y > 100 ) {
+		Polymer.Base.toggleClass( 'float', true, document.querySelector( '#searchBox' ) );
+	}
+	else {
+		Polymer.Base.toggleClass( 'float', false, document.querySelector( '#searchBox' ) );
+	}
 });
 
 Polymer({
@@ -221,7 +237,47 @@ Polymer({
 		location: {
 			type: String,
 			value: ''
+		},
+		searchString: {
+			type: String,
+			value: '',
+			observer: '_refreshFilter'
 		}
+
+	},
+
+	/**
+	 * Filter the collections according to the input search when available
+	 */
+	filterCollections: function( item ) {
+		return item.name.match( new RegExp( this.searchString, 'i' ) );
+	},
+
+	_refreshFilter: function() {
+		this.$.collectionsList.render();
+	},
+
+	/**
+	 * searchToggle
+	 * toggle the search box when the search button is clicked
+	 */
+	searchToggle: function() {
+		this.search = ! this.search;
+
+		if ( ! this.search ) {
+			this.searchString = '';
+			return;
+		}
+
+		this.async( function() {
+			this.$.searchBox.select();
+			this.$.searchBox.focus();
+		}, 500 );
+	},
+
+	// Menu Items
+	_newCollection: function() {
+		this.fire( 'new-collection' );
 	},
 
 	_userProfile: function() {
