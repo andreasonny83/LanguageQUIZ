@@ -82,7 +82,6 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 	.content {
 		max-width: 1400px;
 		margin: 0 auto;
-		height: 3000px;
 	}
 
 	lq-tile {
@@ -198,9 +197,9 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 					</lq-tile>
 				</template> -->
 				<template id="collectionsList" is="dom-repeat" items="[[collections]]" as="collection" filter="filterCollections">
-					<lq-tile small id="[[collection.uid]]"
+					<lq-tile small uid="[[collection.__firebaseKey__]]"
 						title="[[collection.name]]"
-						placeholder="[[tile_placeholder]]" sizing="cover" fade>
+						placeholder="[[tile_placeholder]]" sizing="cover" on-tap="_editCollection" fade>
 						<p class="description">[[collection.description]]</p>
 					</lq-tile>
 				</template>
@@ -275,7 +274,13 @@ Polymer({
 		}, 500 );
 	},
 
+	_editCollection: function(e) {
+		var coll_uid = e.target.uid;
+		page( '/collections/' + coll_uid );
+	},
+
 	// Menu Items
+
 	_newCollection: function() {
 		this.fire( 'new-collection' );
 	},

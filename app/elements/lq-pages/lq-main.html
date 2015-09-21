@@ -13,12 +13,13 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 		height: 100%;
 	}
 	</style>
-	<neon-animated-pages id="pages" class="flex" selected="{{selected}}" entry-animation="[[entryAnimation]]" exit-animation="[[exitAnimation]]">
+	<neon-animated-pages id="pages" class="flex" selected="[[selected]]" entry-animation="[[entryAnimation]]" exit-animation="[[exitAnimation]]">
 
 		<lq-login id="lqLogin" on-log-out="_logOut"></lq-login>
 		<lq-home-page id="lqHome" user-data="[[lqUser]]" collections="{{collections}}" on-tile-click="_onCollection" on-new-collection="_newCollection" on-user-profile="_userProfile" on-log-out="_logOut" on-user-profile="_userProfile"></lq-home-page>
-		<lq-user-collection id="lqUserCollection" on-go-back="_goBack"></lq-user-collection>
 		<lq-user-profile id="lqUserProfile" user="{{lqUser}}" on-go-back="_goBack"></lq-user-profile>
+		<lq-user-collection id="lqUserCollection" on-go-back="_goBack"></lq-user-collection>
+		<lq-collection-edit id="lqCollectionEdit" collection="{{lqEditCollection}}" on-go-back="_goBack"></lq-collection-edit>
 
 	</neon-animated-pages>
 
@@ -27,14 +28,18 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
 	<firebase-auth id="firebaseLogin" location="[[apiDir]]" provider="password" user="{{user}}" on-login="userLoggedIn" on-user-created="userRegistered" on-logout="userLoggedOut" on-error="firebaseError" on-password-changed="passwordChanged" on-email-changed="emailChanged" on-password-reset="passwordReset"></firebase-auth>
 
-	<firebase-document location="[[location]]" data="{{lqUser}}"></firebase-document>
+	<firebase-document location="[[userLocation]]" data="{{lqUser}}"></firebase-document>
+
+	<firebase-document id="collectionEdit" location="[[collLocation]]" data="{{lqEditCollection}}"></firebase-document>
+
 	<firebase-collection id="lqCollections" location="[[collectionsLocation]]" data="{{collections}}"></firebase-collection>
 </template>
 
 <script>
-var lqMain = document.querySelector( '#lqMain' );
-var lqLogin = document.querySelector( '#lqLogin' );
-var lqUserProfile = document.querySelector( '#lqUserProfile' );
+var lqMain           = document.querySelector( '#lqMain' );
+var lqLogin          = document.querySelector( '#lqLogin' );
+var lqUserProfile    = document.querySelector( '#lqUserProfile' );
+// var lqCollectionEdit = document.querySelector( '#lqCollectionEdit' );
 
 Polymer({
 	is: 'lq-main',
@@ -53,7 +58,10 @@ Polymer({
 
 		notify: true,
 
-		selected: 0
+		selected: {
+			type: Number,
+			value: 0
+		}
 	},
 
 	/**
@@ -73,7 +81,15 @@ Polymer({
 		}
 	},
 
+	resetSpinners: function() {
+		lqLogin._spin_login          = false;
+		lqLogin._spin_register       = false;
+		lqLogin._spin_password_reset = false;
+	},
+
 	userRegistered: function() {
+		this.resetSpinners();
+
 		lqMain.fireToast( 'You are now registerd. Logging in...' );
 		this.userRegistration = true;
 		this.regInfo = {
@@ -85,39 +101,58 @@ Polymer({
 	},
 
 	userLoggedIn: function() {
+		this.resetSpinners();
+
 		if ( this.userRegistration ) {
 			// Store the new user inside the users table
 			var usersRef = this.$.firebaseLogin.ref.child( 'users' ).child( this.user.uid );
 			usersRef.set( this.regInfo );
 		}
 
-		page( '/home' );
-		lqLogin.resetFields();
+		this.entryAnimation = 'slide-from-right-animation';
+		this.exitAnimation = 'slide-left-animation';
+		page.redirect( '/home' );
 
-		this.fireToast( 'You are now logged in.' );
-		this.location = this.apiDir + '/users/' + this.user.uid;
+		lqLogin.resetFields();
+		this.userLocation = this.apiDir + '/users/' + this.user.uid;
 		this.collectionsLocation = this.apiDir + '/collections/';
+		this.fireToast( 'You are now logged in.' );
 	},
 
 	passwordChanged: function() {
+		this.resetSpinners();
 		this.fireToast( 'Your new password has been saved.' );
 		lqUserProfile.userReset = {};
 	},
 
 	emailChanged: function() {
+		this.resetSpinners();
 		this.fireToast( 'Your new email has been saved.' );
 		lqUserProfile.userReset = {};
 	},
 
 	_newCollection: function() {
+		this.entryAnimation = 'slide-from-right-animation';
+		this.exitAnimation = 'slide-left-animation';
 		page( '/new-collection' );
 	},
 
 	_userProfile: function() {
+		this.entryAnimation = 'slide-from-right-animation';
+		this.exitAnimation = 'slide-left-animation';
 		page( '/profile' );
 	},
 
+	_createCollection: function( collection ) {
+		this.entryAnimation = 'slide-from-left-animation';
+		this.exitAnimation = 'slide-right-animation';
+		page( '/home' );
+		this.$.lqCollections.add({ name: collection.name, status: collection.status });
+	},
+
 	_goBack: function() {
+		this.entryAnimation = 'slide-from-left-animation';
+		this.exitAnimation = 'slide-right-animation';
 		page( '/home' );
 	},
 
@@ -126,15 +161,19 @@ Polymer({
 	},
 
 	userLoggedOut: function() {
-		page( '/' );
+		this.entryAnimation = 'slide-from-left-animation';
+		this.exitAnimation = 'slide-right-animation';
+		page( '/login' );
 		lqMain.fireToast( 'You are now logged out.' );
 	},
 
 	passwordReset: function() {
+		this.resetSpinners();
 		lqMain.fireToast( 'Your new password has been sent to your email address.' );
 	},
 
 	firebaseError: function( error, message ) {
+		this.resetSpinners();
 		lqMain.fireToast( message );
 	}
 });

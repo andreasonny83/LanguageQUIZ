@@ -25,6 +25,18 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 		outline: none;
 	}
 
+	iron-icon[hidden] {
+		display: none;
+	}
+
+	paper-spinner {
+		vertical-align: middle;
+		--paper-spinner-layer-1-color: var(--paper-red-500);
+		--paper-spinner-layer-2-color: var(--paper-red-500);
+		--paper-spinner-layer-3-color: var(--paper-red-500);
+		--paper-spinner-layer-4-color: var(--paper-red-500);
+	}
+
 	.centered {
 		max-width: 400px;
 		margin-left: auto;
@@ -51,11 +63,13 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 				<paper-input id="loginPassword" name="password" label="Password" required minlength=6 type="password" error-message="password must be 6 minimum characters" value="{{password}}" ></paper-input>
 			</div>
 			<div class="card-actions">
-				<paper-button class="orange" on-tap="passwordReset" >
+				<paper-button class="orange" on-tap="passwordReset" disabled$="{{_spin_password_reset}}">
+					<paper-spinner active$="{{_spin_password_reset}}"></paper-spinner>
 					reset password
 				</paper-button>
-				<paper-button class="green" on-tap="login">
-					<iron-icon icon="check"></iron-icon>
+				<paper-button class="green" on-tap="login" disabled$="{{_spin_login}}">
+					<paper-spinner active$="{{_spin_login}}"></paper-spinner>
+					<iron-icon icon="check" hidden$="{{_spin_login}}"></iron-icon>
 					ok
 				</paper-button>
 			</div>
@@ -103,8 +117,9 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 				</paper-dropdown-menu>
 			</div>
 			<div class="card-actions">
-				<paper-button class="green" on-tap="register">
-					<iron-icon icon="check"></iron-icon>
+				<paper-button class="green" on-tap="register" disabled$="{{_spin_register}}">
+					<paper-spinner active$="{{_spin_register}}"></paper-spinner>
+					<iron-icon icon="check" hidden$="{{_spin_register}}"></iron-icon>
 					Register
 				</paper-button>
 			</div>
@@ -135,13 +150,14 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 </template>
 
 <script>
-var lqMain = document.querySelector( '#lqMain' );
-
 Polymer({
 	is: 'lq-login',
 
 	properties: {
-		reg: Object
+		reg: Object,
+		_spin_login: false,
+		_spin_register: false,
+		_spin_password_reset: false
 	},
 
 	observers: [
@@ -155,10 +171,12 @@ Polymer({
 	},
 
 	init: function() {
+		var lqMain = document.querySelector( '#lqMain' );
+
 		this.resetFields();
-		// if ( lqMain.$.firebaseLogin.statusKnown ) {
-		// 	page( '/home' );
-		// }
+		if ( lqMain.$.firebaseLogin && lqMain.$.firebaseLogin.statusKnown && lqMain.$.firebaseLogin.user && lqMain.$.firebaseLogin.user.uid ) {
+			page.redirect( '/home' );
+		}
 	},
 
 	/**
@@ -223,6 +241,8 @@ Polymer({
 	},
 
 	register: function() {
+		this._spin_register = true;
+
 		this.reg.lang = this.$.language.selectedItemLabel;
 		this.$.regName.validate();
 		this.$.regEmail.validate();
@@ -231,16 +251,18 @@ Polymer({
 		this.$.regPasswordConfirm.validate();
 
 		if ( ! this.reg.lang ) {
-			lqMain.fireToast( 'Please, select your language first.' );
+			window.lqMain.fireToast( 'Please, select your language first.' );
+			this._spin_register = false;
 			return;
 		}
 
 		if ( this.$.regName.invalid || this.$.regEmail.invalid || this.$.regEmailConfirm.invalid || this.$.regPassword.invalid || this.$.regPasswordConfirm.invalid ) {
-			lqMain.fireToast( 'Please, fix the wrong information and try again.' );
+			window.lqMain.fireToast( 'Please, fix the wrong information and try again.' );
+			this._spin_register = false;
 			return;
 		}
 
-		lqMain.$.firebaseLogin.createUser( this.reg.email, this.reg.password );
+		window.lqMain.$.firebaseLogin.createUser( this.reg.email, this.reg.password );
 	},
 
 	/**
@@ -248,19 +270,23 @@ Polymer({
 	 * then send the Ajax request to the API
 	 */
 	login: function() {
+		this._spin_login = true;
+
 		this.$.loginEmail.validate();
 		this.$.loginPassword.validate();
 
 		if ( this.email.length > 0 && this.password.length > 0 && this.$.loginEmail.validate() && this.$.loginPassword.validate() ) {
-			lqMain.$.firebaseLogin.login({email:this.email, password:this.password});
+			window.lqMain.$.firebaseLogin.login({email:this.email, password:this.password});
 		}
 		else {
-			lqMain.fireToast( 'Please, check the entered details and try again.' );
+			window.lqMain.fireToast( 'Please, check the entered details and try again.' );
+			this._spin_login = false;
 		}
 	},
 
 	passwordReset: function() {
-		lqMain.$.firebaseLogin.sendPasswordResetEmail(this.email);
+		this._spin_password_reset = true;
+		window.lqMain.$.firebaseLogin.sendPasswordResetEmail(this.email);
 	}
 
 });

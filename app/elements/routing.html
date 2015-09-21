@@ -7,35 +7,51 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 <script>
 
   window.addEventListener('WebComponentsReady', function() {
-    var lqMain        = document.querySelector( '#lqMain' );
-    var lqUserProfile = document.querySelector( '#lqUserProfile' );
+	var lqMain           = document.querySelector( '#lqMain' );
+	var lqLogin          = document.querySelector( '#lqLogin' );
+	var lqUserProfile    = document.querySelector( '#lqUserProfile' );
+	var lqUserCollection = document.querySelector( '#lqUserCollection' );
+	var lqCollectionEdit = document.querySelector( '#lqCollectionEdit' );
 
-    // page.base( 'http://localhost:8888/polymer/dist');
-    // page.base( 'http://sonnywebdesign.com/languagequiz');
-    page.base( './');
+	// page.base( 'http://localhost:8888/polymer/dist');
+	// page.base( 'http://sonnywebdesign.com/languagequiz');
+	// page.base( './');
+	page('/', function () {
+		lqMain.selected = 0;
+		// page.redirect( '/login' );
+	});
 
-    page('/', function () {
-        lqMain.selected = 0;
-    });
+	page('/login', function () {
+		lqMain.selected = 0;
+		lqLogin.init();
+	});
 
-    page('/home', function () {
-        lqMain.selected = 1;
-    });
+	page('/home', function () {
+		lqMain.selected = 1;
+	});
 
-    page( '/profile', function () {
-		lqMain.selected = 3;
+	page( '/profile', function () {
+		lqMain.selected = 2;
 		lqUserProfile.reset();
 	});
 
 	page( '/new-collection', function () {
-		lqMain.selected = 2;
+		lqMain.selected = 3;
+		lqUserCollection.init();
 	});
 
-    page('*', function () {
-        lqMain.selected = 0;
-    });
+	page( '/collections/:uid', function ( uid ) {
+		lqMain.selected = 4;
+		lqCollectionEdit.init( uid );
+	});
 
-    page();
+	page('*', function () {
+		page.redirect( '/login' );
+	});
+
+	page({
+	  hashbang:true
+	});
 
   });
 </script>

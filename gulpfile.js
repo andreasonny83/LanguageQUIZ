@@ -232,19 +232,8 @@ gulp.task('serve:dist', ['default'], function () {
   });
 });
 
-// Build Production Files without jshint, the Default Task
-gulp.task('default', ['clean'], function (cb) {
-  runSequence(
-    ['copy', 'styles'],
-    'elements',
-    ['images', 'fonts', 'html'],
-    'vulcanize',
-    cb);
-    // Note: add , 'precache' , after 'vulcanize', if your are going to use Service Worker
-});
-
 // Build Production Files, the Default Task
-gulp.task('dist', ['clean'], function (cb) {
+gulp.task('default', ['clean'], function (cb) {
   runSequence(
     ['copy', 'styles'],
     'elements',
@@ -256,7 +245,7 @@ gulp.task('dist', ['clean'], function (cb) {
 
 // Load tasks for web-component-tester
 // Adds tasks for `gulp test:local` and `gulp test:remote`
-// require('web-component-tester').gulp.init(gulp);
+require('web-component-tester').gulp.init(gulp);
 
 // Load custom tasks from the `tasks` directory
 try { require('require-dir')('tasks'); } catch (err) {}
