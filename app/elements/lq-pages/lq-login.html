@@ -68,7 +68,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 					reset password
 				</paper-button>
 				<paper-button class="green" on-tap="login" disabled$="{{_spin_login}}">
-					<paper-spinner active$="{{_spin_login}}"></paper-spinner>
+					<paper-spinner active$="{{_spin_login}}" hidden="{{_spin_login}}"></paper-spinner>
 					<iron-icon icon="check" hidden$="{{_spin_login}}"></iron-icon>
 					ok
 				</paper-button>
@@ -171,8 +171,6 @@ Polymer({
 	},
 
 	init: function() {
-		var lqMain = document.querySelector( '#lqMain' );
-
 		this.resetFields();
 		if ( lqMain.$.firebaseLogin && lqMain.$.firebaseLogin.statusKnown && lqMain.$.firebaseLogin.user && lqMain.$.firebaseLogin.user.uid ) {
 			page.redirect( '/home' );
@@ -194,10 +192,10 @@ Polymer({
 			lang:             ''
 		};
 
-		this.$.regName.invalid = false;
-		this.$.regEmail.invalid = false;
-		this.$.regEmailConfirm.invalid = false;
-		this.$.regPassword.invalid = false;
+		this.$.regName.invalid            = false;
+		this.$.regEmail.invalid           = false;
+		this.$.regEmailConfirm.invalid    = false;
+		this.$.regPassword.invalid        = false;
 		this.$.regPasswordConfirm.invalid = false;
 	},
 
@@ -242,8 +240,7 @@ Polymer({
 
 	register: function() {
 		this._spin_register = true;
-
-		this.reg.lang = this.$.language.selectedItemLabel;
+		this.reg.lang       = this.$.language.selectedItemLabel;
 		this.$.regName.validate();
 		this.$.regEmail.validate();
 		this.$.regEmailConfirm.validate();
@@ -251,18 +248,18 @@ Polymer({
 		this.$.regPasswordConfirm.validate();
 
 		if ( ! this.reg.lang ) {
-			window.lqMain.fireToast( 'Please, select your language first.' );
+			lqMain.fireToast( 'Please, select your language first.' );
 			this._spin_register = false;
 			return;
 		}
 
 		if ( this.$.regName.invalid || this.$.regEmail.invalid || this.$.regEmailConfirm.invalid || this.$.regPassword.invalid || this.$.regPasswordConfirm.invalid ) {
-			window.lqMain.fireToast( 'Please, fix the wrong information and try again.' );
+			lqMain.fireToast( 'Please, fix the wrong information and try again.' );
 			this._spin_register = false;
 			return;
 		}
 
-		window.lqMain.$.firebaseLogin.createUser( this.reg.email, this.reg.password );
+		lqMain.$.firebaseLogin.createUser( this.reg.email, this.reg.password );
 	},
 
 	/**
@@ -276,17 +273,17 @@ Polymer({
 		this.$.loginPassword.validate();
 
 		if ( this.email.length > 0 && this.password.length > 0 && this.$.loginEmail.validate() && this.$.loginPassword.validate() ) {
-			window.lqMain.$.firebaseLogin.login({email:this.email, password:this.password});
+			lqMain.$.firebaseLogin.login({email:this.email, password:this.password});
 		}
 		else {
-			window.lqMain.fireToast( 'Please, check the entered details and try again.' );
+			lqMain.fireToast( 'Please, check the entered details and try again.' );
 			this._spin_login = false;
 		}
 	},
 
 	passwordReset: function() {
 		this._spin_password_reset = true;
-		window.lqMain.$.firebaseLogin.sendPasswordResetEmail(this.email);
+		lqMain.$.firebaseLogin.sendPasswordResetEmail(this.email);
 	}
 
 });

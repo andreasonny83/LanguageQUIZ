@@ -102,13 +102,15 @@ Polymer({
 	init: function() {
 		this.collection = {
 			name: 'New Collection',
-			status: '',
+			status: 0,
+			score: 0,
+			description: '',
 			image: 'http://lorempixel.com/800/320/'
 		};
 	},
 
 	_createCollection: function() {
-		window.lqMain._createCollection( this.collection );
+		lqMain._createCollection( this.collection );
 	},
 
 	_goBack: function() {

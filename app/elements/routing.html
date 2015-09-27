@@ -5,28 +5,19 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
 <script src="../../bower_components/page/page.js"></script>
 <script>
+window.addEventListener('WebComponentsReady', function() {
 
-  window.addEventListener('WebComponentsReady', function() {
-	var lqMain           = document.querySelector( '#lqMain' );
-	var lqLogin          = document.querySelector( '#lqLogin' );
-	var lqUserProfile    = document.querySelector( '#lqUserProfile' );
-	var lqUserCollection = document.querySelector( '#lqUserCollection' );
-	var lqCollectionEdit = document.querySelector( '#lqCollectionEdit' );
-
-	// page.base( 'http://localhost:8888/polymer/dist');
-	// page.base( 'http://sonnywebdesign.com/languagequiz');
-	// page.base( './');
-	page('/', function () {
+	page( '/', function () {
 		lqMain.selected = 0;
-		// page.redirect( '/login' );
+		page.redirect( '/login' );
 	});
 
-	page('/login', function () {
+	page( '/login', function () {
 		lqMain.selected = 0;
 		lqLogin.init();
 	});
 
-	page('/home', function () {
+	page( '/home', function () {
 		lqMain.selected = 1;
 	});
 
@@ -45,13 +36,15 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 		lqCollectionEdit.init( uid );
 	});
 
-	page('*', function () {
-		page.redirect( '/login' );
+	page( '*', function () {
+		page.redirect( '/' );
 	});
 
 	page({
-	  hashbang:true
+		hashbang:true
 	});
 
-  });
+	page.start();
+
+});
 </script>

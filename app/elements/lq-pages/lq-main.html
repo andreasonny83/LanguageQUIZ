@@ -36,18 +36,13 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 </template>
 
 <script>
-var lqMain           = document.querySelector( '#lqMain' );
-var lqLogin          = document.querySelector( '#lqLogin' );
-var lqUserProfile    = document.querySelector( '#lqUserProfile' );
-// var lqCollectionEdit = document.querySelector( '#lqCollectionEdit' );
-
 Polymer({
 	is: 'lq-main',
 
 	properties: {
 		apiDir: {
 			type: String,
-			value: 'https://glowing-inferno-822.firebaseio.com'
+			value: 'https://languagequiz-dev.firebaseio.com'
 		},
 
 		userRegistration: false,
@@ -70,9 +65,9 @@ Polymer({
 	 * @param String message
 	 */
 	fireToast: function( message ) {
-		if ( ! window.toast.visible ) {
-			window.toast.text = message;
-			window.toast.show();
+		if ( ! toast.visible ) {
+			toast.text = message;
+			toast.show();
 		}
 		else {
 			setTimeout( function() {
@@ -134,26 +129,26 @@ Polymer({
 	_newCollection: function() {
 		this.entryAnimation = 'slide-from-right-animation';
 		this.exitAnimation = 'slide-left-animation';
-		page( '/new-collection' );
+		page.redirect( '/new-collection' );
 	},
 
 	_userProfile: function() {
 		this.entryAnimation = 'slide-from-right-animation';
 		this.exitAnimation = 'slide-left-animation';
-		page( '/profile' );
+		page.redirect( '/profile' );
 	},
 
 	_createCollection: function( collection ) {
 		this.entryAnimation = 'slide-from-left-animation';
 		this.exitAnimation = 'slide-right-animation';
-		page( '/home' );
-		this.$.lqCollections.add({ name: collection.name, status: collection.status });
+		lqCollections.add({ name: collection.name, status: collection.status });
+		page.redirect( '/home' );
 	},
 
 	_goBack: function() {
 		this.entryAnimation = 'slide-from-left-animation';
 		this.exitAnimation = 'slide-right-animation';
-		page( '/home' );
+		page.redirect( '/home' );
 	},
 
 	_logOut: function() {
@@ -163,8 +158,8 @@ Polymer({
 	userLoggedOut: function() {
 		this.entryAnimation = 'slide-from-left-animation';
 		this.exitAnimation = 'slide-right-animation';
-		page( '/login' );
-		lqMain.fireToast( 'You are now logged out.' );
+		page.redirect( '/login' );
+		this.fireToast( 'You are now logged out.' );
 	},
 
 	passwordReset: function() {

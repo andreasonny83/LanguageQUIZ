@@ -276,7 +276,7 @@ Polymer({
 
 	_editCollection: function(e) {
 		var coll_uid = e.target.uid;
-		page( '/collections/' + coll_uid );
+		page.redirect( '/collections/' + coll_uid );
 	},
 
 	// Menu Items
