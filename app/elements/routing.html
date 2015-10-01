@@ -3,11 +3,17 @@
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
 
-<script src="../../bower_components/page/page.js"></script>
+<script src="../bower_components/page/page.js"></script>
 <script>
 window.addEventListener('WebComponentsReady', function() {
 
-	page( '/', function () {
+	// Middleware
+	function scrollToTop( ctx, next ) {
+		lqApp.scrollPageToTop();
+		next();
+	}
+
+	page( '/', scrollToTop, function () {
 		lqMain.selected = 0;
 		page.redirect( '/login' );
 	});
@@ -17,34 +23,34 @@ window.addEventListener('WebComponentsReady', function() {
 		lqLogin.init();
 	});
 
-	page( '/home', function () {
+	page( '/home', scrollToTop, function () {
 		lqMain.selected = 1;
 	});
 
 	page( '/profile', function () {
 		lqMain.selected = 2;
+		lqUserProfile.querySelector( '#mainContainer' ).scrollTop = 0;
 		lqUserProfile.reset();
 	});
 
 	page( '/new-collection', function () {
 		lqMain.selected = 3;
-		lqUserCollection.init();
+		lqUserCollection.querySelector( '#mainContainer' ).scrollTop = 0;
 	});
 
 	page( '/collections/:uid', function ( uid ) {
 		lqMain.selected = 4;
+		lqCollectionEdit.querySelector( '#mainContainer' ).scrollTop = 0;
 		lqCollectionEdit.init( uid );
 	});
 
-	page( '*', function () {
-		page.redirect( '/' );
+	page( '*', scrollToTop, function () {
+		page.redirect( '/login' );
 	});
 
 	page({
 		hashbang:true
 	});
-
-	page.start();
 
 });
 </script>

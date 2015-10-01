@@ -5,23 +5,20 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
 
 <html>
-
   <head>
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <title>Elements Test Runner</title>
+    <title>LanguageQUIZ Test Runner</title>
     <meta charset="UTF-8">
 
     <script src="../../bower_components/webcomponentsjs/webcomponents.min.js"></script>
     <script src="../../bower_components/web-component-tester/browser.js"></script>
   </head>
-
   <body>
-
     <script>
-      WCT.loadSuites(['app.html']);
+      WCT.loadSuites([
+          'app.html',
+          'firebase.html'
+      ]);
     </script>
-
-
   </body>
-
 </html>

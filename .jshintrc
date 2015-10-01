@@ -17,6 +17,7 @@
     "Polymer": true,
     "page": true,
     "toast": true,
+    "lqApp": true,
     "lqMain": true,
     "lqLogin": true,
     "lqHome": true,

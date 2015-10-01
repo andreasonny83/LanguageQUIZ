@@ -3,8 +3,6 @@
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
 
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-
 <dom-module id="lq-user-profile">
 <template>
 	<style include="lq-shared-styles">
@@ -129,10 +127,10 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 			<div class="horizontal-section-container">
 				<lq-card heading="E-mail" id="card_email">
 					<div class="card-content">
-						<paper-input id="oldEmail" label="Old Email*" value="{{userReset.oldEmail}}" type="email"></paper-input>
-						<paper-input id="email" label="New Email*" value="{{userReset.email}}" type="email"></paper-input>
-						<paper-input id="emailPassword" label="Password*" value="{{userReset.emailPassword}}"
-							type="password" minlength=6
+						<paper-input id="oldEmail" label="Old Email*" value="{{userReset.oldEmail}}" type="email" required auto-validate="true" pattern="[a-zA-Z]{3,}@[a-zA-Z]{3,}[.]{1}"></paper-input>
+						<paper-input id="email" label="New Email*" auto-validate="true" value="{{userReset.email}}" required type="email"></paper-input>
+						<paper-input id="emailPassword" label="Password*" auto-validate="true" value="{{userReset.emailPassword}}"
+							required type="password" minlength=6
 							error-message="password must be 6 minimum characters">
 						</paper-input>
 					</div>
@@ -184,14 +182,16 @@ Polymer({
 		userBuffer: {
 			type: Object,
 			value: function() {
-				return [];
+				return {
+					avatar: ''
+				};
 			}
 		},
 
 		userReset: {
 			type: Object,
 			value: function() {
-				return [];
+				return {};
 			}
 		}
 	},
@@ -199,13 +199,15 @@ Polymer({
 	observers: [
 		'_verifyPassword( userReset.oldPassword )',
 		'_verifyPassword( userReset.password )',
-		'_verifyPassword( userReset.passwordConfirm )',
-		'_verifyEmail( userReset.oldEmail )',
-		'_verifyEmail( userReset.email )'
+		'_verifyPassword( userReset.passwordConfirm )'
+		// '_verifyEmail( userReset.oldEmail )',
+		// '_verifyEmail( userReset.email )'
 	],
 
 	reset: function() {
-		this._resetAvatar();
+		if ( lqMain.lqUser && lqMain.lqUser.avatar ) {
+			this._resetAvatar();
+		}
 	},
 
 	_verifyPassword: function() {
@@ -242,7 +244,18 @@ Polymer({
 	},
 
 	_saveAvatar: function() {
-		lqMain.set( 'lqUser.avatar', this.userBuffer.avatar );
+		// Exit if the avatar has not changed
+		if ( this.userBuffer.avatar === lqMain.lqUser.avatar ) {
+			return;
+		}
+
+		if ( this.userBuffer.avatar && this.userBuffer.avatar !== '' ) {
+			lqMain.set( 'lqUser.avatar', this.userBuffer.avatar );
+			this.fire( 'user-changed', {key:'avatar', value:this.userBuffer.avatar} );
+		}
+		else {
+			lqMain.fireToast( 'You must set an avatar first.' );
+		}
 	},
 
 	_saveEmail: function() {

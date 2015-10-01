@@ -3,8 +3,6 @@
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
 
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-
 <dom-module id="lq-main">
 <template>
 	<style include="lq-shared-styles">
@@ -17,14 +15,14 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
 		<lq-login id="lqLogin" on-log-out="_logOut"></lq-login>
 		<lq-home-page id="lqHome" user-data="[[lqUser]]" collections="{{collections}}" on-tile-click="_onCollection" on-new-collection="_newCollection" on-user-profile="_userProfile" on-log-out="_logOut" on-user-profile="_userProfile"></lq-home-page>
-		<lq-user-profile id="lqUserProfile" user="{{lqUser}}" on-go-back="_goBack"></lq-user-profile>
+		<lq-user-profile on-user-changed="checkUserDetailChanged" id="lqUserProfile" user="{{lqUser}}" on-go-back="_goBack"></lq-user-profile>
 		<lq-user-collection id="lqUserCollection" on-go-back="_goBack"></lq-user-collection>
 		<lq-collection-edit id="lqCollectionEdit" collection="{{lqEditCollection}}" on-go-back="_goBack"></lq-collection-edit>
 
 	</neon-animated-pages>
 
 	<paper-toast id="toast"></paper-toast>
-	<lq-page-loading id="spinner"></lq-page-loading>
+	<lq-page-loading id="spinner" active></lq-page-loading>
 
 	<firebase-auth id="firebaseLogin" location="[[apiDir]]" provider="password" user="{{user}}" on-login="userLoggedIn" on-user-created="userRegistered" on-logout="userLoggedOut" on-error="firebaseError" on-password-changed="passwordChanged" on-email-changed="emailChanged" on-password-reset="passwordReset"></firebase-auth>
 
@@ -45,19 +43,36 @@ Polymer({
 			value: 'https://languagequiz-dev.firebaseio.com'
 		},
 
+		data: {
+			value: Object,
+			value: function() {
+				return {
+					user: false,
+					collections: false
+				};
+			}
+		},
+
+		app_ready: false,
+
 		userRegistration: false,
 
 		regInfo: Object,
 
 		lqUser: Object,
 
-		notify: true,
-
 		selected: {
 			type: Number,
 			value: 0
 		}
 	},
+
+	observers: [
+		'dataInformations(data.*)',
+		'userInformation(lqUser.*)',
+		'collectionsInformation(collections)',
+		'userAvatarChanged(lqUser.avatar)'
+	],
 
 	/**
 	 * Fire a toast message
@@ -82,6 +97,27 @@ Polymer({
 		lqLogin._spin_password_reset = false;
 	},
 
+	userInformation: function() {
+		if ( ! this.data.user ) {
+			console.log('user information fetched');
+			this.set( 'data.user', true );
+		}
+	},
+
+	collectionsInformation: function() {
+		if ( ! this.data.collections ) {
+			console.log('collections information fetched');
+			this.set( 'data.collections', true );
+		}
+	},
+
+	dataInformations: function() {
+		if ( this.data.collections && this.data.user ) {
+			console.log('app is ready!');
+			this.$.spinner.removeAttribute( 'active' );
+		}
+	},
+
 	userRegistered: function() {
 		this.resetSpinners();
 
@@ -93,6 +129,18 @@ Polymer({
 		};
 
 		this.$.firebaseLogin.login({email:lqLogin.reg.email, password:lqLogin.reg.password});
+	},
+
+	checkUserDetailChanged: function( value_a, value_b ) {
+		if ( value_b.key === 'avatar' ) {
+			if ( this.lqUser.avatar === lqUserProfile.userBuffer.avatar ) {
+				this.fireToast( 'Your avar has been updated.' );
+			}
+		}
+	},
+
+	userAvatarChanged: function() {
+		lqUserProfile.set( 'userBuffer.avatar', this.lqUser.avatar );
 	},
 
 	userLoggedIn: function() {
@@ -141,7 +189,7 @@ Polymer({
 	_createCollection: function( collection ) {
 		this.entryAnimation = 'slide-from-left-animation';
 		this.exitAnimation = 'slide-right-animation';
-		lqCollections.add({ name: collection.name, status: collection.status });
+		this.lqCollections.add({ name: collection.name, status: collection.status });
 		page.redirect( '/home' );
 	},
 

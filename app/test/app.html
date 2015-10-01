@@ -1,47 +1,58 @@
 <!doctype html>
 <!--
 @license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
 
 <html>
-<head>
-	<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-	<title>my-greeting-basic</title>
+	<head>
+		<meta charset="UTF-8">
+		<title>LanguageQUIZ tests</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-	<script src="../../bower_components/webcomponentsjs/webcomponents.min.js"></script>
-	<link rel="import" href="../../bower_components/polymer/polymer.html">
-	<script src="../../bower_components/web-component-tester/browser.js"></script>
-	<script src="../../bower_components/test-fixture/test-fixture-mocha.js"></script>
-	<link rel="import" href="../../bower_components/test-fixture/test-fixture.html">
+		<script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+		<script src="../../bower_components/web-component-tester/browser.js"></script>
+		<script src="../../bower_components/test-fixture/test-fixture-mocha.js"></script>
+		<script src="../../bower_components/iron-test-helpers/mock-interactions.js"></script>
 
-	<!-- Import the element to test -->
-	<link rel="import" href="../elements/elements.html">
-</head>
-<body>
+		<link rel="import" href="../../bower_components/polymer/polymer.html">
+		<link rel="import" href="../../bower_components/promise-polyfill/promise-polyfill.html">
+		<link rel="import" href="../../bower_components/test-fixture/test-fixture.html">
+		<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+		<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+		<link rel="import" href="../elements/lq-pages/lq-main.html">
+		<link rel="import" href="../elements/lq-pages/lq-login.html">
+	</head>
+	<body>
 
-	<test-fixture id="basic">
-		<template>
-			<lq-main id="lqMain"></lq-main>
-		</template>
-	</test-fixture>
+		<test-fixture id="lqApp">
+			<template>
+				<lq-main id="lqMain"></lq-main>
+			</template>
+		</test-fixture>
 
-	<script>
+		<script>
+		suite('languageQuizMain', function() {
+			setup(function() {
+				lqMain = fixture('lqApp');
+			});
 
-	suite('lq-main', function() {
+			test('warming up', function() {
+				assert.equal( 1, true );
+				assert.equal( 'lqMain', lqMain.id );
+			});
 
-		test('main ready', function() {
-			assert.equal(1, true);
-			assert.equal( "lqMain", document.getElementById('lqMain').id );
+			test('The app should display the login page on load', function() {
+				assert.equal(0, lqMain.selected);
+			});
+
+			test('Test toast messages', function() {
+				assert.equal(lqMain.$.toast.text, '');
+				lqMain.fireToast('hello world');
+				assert.equal(lqMain.$.toast.text, 'hello world');
+			});
+
 		});
-
-	});
-	</script>
-
-</body>
+		</script>
+	</body>
 </html>
