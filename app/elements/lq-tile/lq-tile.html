@@ -38,7 +38,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 		display: flex;
 	}
 
-	paper-icon-button.red {
+	paper-icon-button[favorite] {
 		color: var(--paper-red-500);
 
 		--paper-icon-button-ink-color: var(--paper-red-500);
@@ -64,10 +64,9 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 				<content select=".description"></content>
 			</div>
 			<div class="card-actions">
-				<paper-button>
-					<paper-ripple fit uid="[[uid]]"></paper-ripple>Edit</paper-button>
+				<paper-button id="edit" on-tap="editTap">Edit</paper-button>
 				<div class="flex"></div>
-				<paper-icon-button icon="favorite" title="favorite" class="red"></paper-icon-button>
+				<paper-icon-button id="favorite" on-tap="favoriteTap" favorite$="{{userFavorite}}" icon="favorite" title="favorite"></paper-icon-button>
 			</div>
 		</lq-card>
 	</template>
@@ -78,6 +77,11 @@ Polymer({
 	is: 'lq-tile',
 
 	properties: {
+		uid: {
+			type: String,
+			reflectToAttribute: true
+		},
+
 		loading: {
 			type: Boolean,
 			value: false,
@@ -126,6 +130,7 @@ Polymer({
 	behaviors: [
 		Polymer.NeonAnimationRunnerBehavior
 	],
+
 	listeners: {
 		'neon-animation-finish': '_onNeonAnimationFinish'
 	},
@@ -135,6 +140,14 @@ Polymer({
 			this.show();
 		}, 250 );
 
+	},
+
+	editTap: function() {
+		this.fire( 'edit-collection', {uid: this.uid});
+	},
+
+	favoriteTap: function() {
+		this.fire( 'toggle-favorite', {uid: this.uid});
 	},
 
 	show: function() {

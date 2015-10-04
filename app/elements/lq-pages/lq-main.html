@@ -14,21 +14,22 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 	<neon-animated-pages id="pages" class="flex" selected="[[selected]]" entry-animation="[[entryAnimation]]" exit-animation="[[exitAnimation]]">
 
 		<lq-login id="lqLogin" on-log-out="_logOut"></lq-login>
-		<lq-home-page id="lqHome" user-data="[[lqUser]]" collections="{{collections}}" on-tile-click="_onCollection" on-new-collection="_newCollection" on-user-profile="_userProfile" on-log-out="_logOut" on-user-profile="_userProfile"></lq-home-page>
-		<lq-user-profile on-user-changed="checkUserDetailChanged" id="lqUserProfile" user="{{lqUser}}" on-go-back="_goBack"></lq-user-profile>
+		<lq-home-page id="lqHome" user-data="{{lqUser}}" collections="{{collections}}" on-tile-click="_onCollection" on-new-collection="_newCollection" on-user-profile="_userProfile" on-edit-collection="_editCollection" on-toggle-favorite="_toggleFavorite" on-log-out="_logOut" on-user-profile="_userProfile"></lq-home-page>
+		<lq-user-profile id="lqUserProfile" on-user-changed="checkUserDetailChanged" user="{{lqUser}}" on-go-back="_goBack"></lq-user-profile>
 		<lq-user-collection id="lqUserCollection" on-go-back="_goBack"></lq-user-collection>
 		<lq-collection-edit id="lqCollectionEdit" collection="{{lqEditCollection}}" on-go-back="_goBack"></lq-collection-edit>
 
 	</neon-animated-pages>
 
 	<paper-toast id="toast"></paper-toast>
-	<lq-page-loading id="spinner" active></lq-page-loading>
+
+	<lq-page-loading id="spinner"></lq-page-loading>
 
 	<firebase-auth id="firebaseLogin" location="[[apiDir]]" provider="password" user="{{user}}" on-login="userLoggedIn" on-user-created="userRegistered" on-logout="userLoggedOut" on-error="firebaseError" on-password-changed="passwordChanged" on-email-changed="emailChanged" on-password-reset="passwordReset"></firebase-auth>
 
-	<firebase-document location="[[userLocation]]" data="{{lqUser}}"></firebase-document>
+	<firebase-document id="lqUserDB" location="{{userLocation}}" data="{{lqUser}}"></firebase-document>
 
-	<firebase-document id="collectionEdit" location="[[collLocation]]" data="{{lqEditCollection}}"></firebase-document>
+	<firebase-document id="collectionEdit" location="{{collLocation}}" data="{{lqEditCollection}}"></firebase-document>
 
 	<firebase-collection id="lqCollections" location="[[collectionsLocation]]" data="{{collections}}"></firebase-collection>
 </template>
@@ -38,45 +39,60 @@ Polymer({
 	is: 'lq-main',
 
 	properties: {
+		/**
+		 * the database url
+		 * @type {String}
+		 */
 		apiDir: {
 			type: String,
 			value: 'https://languagequiz-dev.firebaseio.com'
 		},
 
-		data: {
-			value: Object,
-			value: function() {
-				return {
-					user: false,
-					collections: false
-				};
-			}
-		},
+		/**
+		 * this point to an url inside the database
+		 * in where the user settings are stored
+		 * @type {String}
+		 */
+		userLocation: String,
 
-		app_ready: false,
+		/**
+		 * the user information fetched from the database
+		 * @type {Object}
+		 */
+		// lqUser: Object,
 
-		userRegistration: false,
+		/**
+		 * global collections
+		 * @type {Object}
+		 */
+		collections: Object,
 
-		regInfo: Object,
-
-		lqUser: Object,
-
+		/**
+		 * the selected view
+		 * neon-animated-pages
+		 * @type {Number}
+		 */
 		selected: {
 			type: Number,
 			value: 0
+		},
+
+		lqUser_default: {
+			type: Object,
+			value: function() {
+				return {};
+			}
 		}
 	},
 
 	observers: [
-		'dataInformations(data.*)',
-		'userInformation(lqUser.*)',
-		'collectionsInformation(collections)',
+		'dataInformation(lqUser.*, collections, selected)',
 		'userAvatarChanged(lqUser.avatar)'
 	],
 
 	/**
 	 * Fire a toast message
-	 * If busy, queue the request and retry after 500 milliseconds.
+	 * If busy, queue the request and retry after 1 second.
 	 * @param String message
 	 */
 	fireToast: function( message ) {
@@ -87,48 +103,43 @@ Polymer({
 		else {
 			setTimeout( function() {
 				lqMain.fireToast( message );
-			}, 500);
+			}, 1000);
 		}
 	},
 
 	resetSpinners: function() {
-		lqLogin._spin_login          = false;
-		lqLogin._spin_register       = false;
-		lqLogin._spin_password_reset = false;
+		lqLogin.set( 'spin.login', false );
+		lqLogin.set( 'spin.register', false );
+		lqLogin.set( 'spin.password_reset', false );
 	},
 
-	userInformation: function() {
-		if ( ! this.data.user ) {
-			console.log('user information fetched');
-			this.set( 'data.user', true );
-		}
-	},
-
-	collectionsInformation: function() {
-		if ( ! this.data.collections ) {
-			console.log('collections information fetched');
-			this.set( 'data.collections', true );
-		}
-	},
-
-	dataInformations: function() {
-		if ( this.data.collections && this.data.user ) {
-			console.log('app is ready!');
-			this.$.spinner.removeAttribute( 'active' );
+	/**
+	 * Show the loading spinner while fetching the user and collection information
+	 */
+	dataInformation: function() {
+		if ( this.selected > 0 ) {
+			if ( this.collections && this.lqUser ) {
+				this.$.spinner.removeAttribute( 'active' );
+			}
+			else {
+				this.$.spinner.toggleAttribute( 'active', true );
+			}
 		}
 	},
 
 	userRegistered: function() {
 		this.resetSpinners();
 
-		lqMain.fireToast( 'You are now registerd. Logging in...' );
 		this.userRegistration = true;
+
 		this.regInfo = {
-			username: lqLogin.reg.name,
-			lang: lqLogin.reg.lang
+			username: lqLogin.input_field.reg_name,
+			lang: lqLogin.input_field.reg_lang
 		};
 
-		this.$.firebaseLogin.login({email:lqLogin.reg.email, password:lqLogin.reg.password});
+		lqMain.fireToast( 'You are now registerd. Logging in...' );
+
+		this.$.firebaseLogin.login({email:lqLogin.input_field.reg_email_confirm, password:lqLogin.input_field.reg_password_confirm});
 	},
 
 	checkUserDetailChanged: function( value_a, value_b ) {
@@ -152,13 +163,14 @@ Polymer({
 			usersRef.set( this.regInfo );
 		}
 
-		this.entryAnimation = 'slide-from-right-animation';
-		this.exitAnimation = 'slide-left-animation';
-		page.redirect( '/home' );
-
-		lqLogin.resetFields();
-		this.userLocation = this.apiDir + '/users/' + this.user.uid;
+		this.entryAnimation      = 'slide-from-right-animation';
+		this.exitAnimation       = 'slide-left-animation';
+		this.userLocation        = this.apiDir + '/users/' + this.user.uid;
 		this.collectionsLocation = this.apiDir + '/collections/';
+
+		page( '/home' );
+		lqLogin.resetFields();
+
 		this.fireToast( 'You are now logged in.' );
 	},
 
@@ -176,36 +188,89 @@ Polymer({
 
 	_newCollection: function() {
 		this.entryAnimation = 'slide-from-right-animation';
-		this.exitAnimation = 'slide-left-animation';
-		page.redirect( '/new-collection' );
+		this.exitAnimation  = 'slide-left-animation';
+
+		page( '/new-collection' );
 	},
 
 	_userProfile: function() {
 		this.entryAnimation = 'slide-from-right-animation';
-		this.exitAnimation = 'slide-left-animation';
-		page.redirect( '/profile' );
+		this.exitAnimation  = 'slide-left-animation';
+
+		page( '/profile' );
+	},
+
+	_editCollection: function( e ) {
+		lqMain.entryAnimation = 'slide-from-right-animation';
+		lqMain.exitAnimation  = 'slide-left-animation';
+
+		page.redirect( '/collections/' + e.detail.uid );
+	},
+
+	_toggleFavorite: function( e ) {
+		var usersRef, collection_uid, favorites, fav_index;
+
+		usersRef = this.$.firebaseLogin.ref.child( 'users' ).child( this.user.uid ).child( 'favorites' );
+
+		collection_uid = e.detail.uid;
+		favorites     = this.lqUser.favorites ? this.lqUser.favorites : [];
+		fav_index      = favorites.length > 0 ? this.lqUser.favorites.indexOf( collection_uid) : -1;
+
+		if ( this.lqUser.favorites && fav_index >= 0 ) {
+			// remove from favorite
+			favorites.splice( fav_index, 1 );
+		}
+		else {
+			// add to favorite
+			favorites.push( collection_uid );
+		}
+
+		usersRef.set( favorites );
+		// lqHome.refreshFilter();
+		// lqHome.collectionsSelected = [];
+		lqHome.prepareCollections();
 	},
 
 	_createCollection: function( collection ) {
 		this.entryAnimation = 'slide-from-left-animation';
-		this.exitAnimation = 'slide-right-animation';
-		this.lqCollections.add({ name: collection.name, status: collection.status });
-		page.redirect( '/home' );
+		this.exitAnimation  = 'slide-right-animation';
+
+		if ( collection.name && collection.status ) {
+			this.$.lqCollections.add({
+				name: collection.name,
+				status: collection.status
+			});
+
+			page( '/home' );
+			this.fireToast( 'New collection added into the database.' );
+		}
+		else {
+			this.fireToast( 'You must select a collection name and status first.' );
+		}
+
 	},
 
 	_goBack: function() {
 		this.entryAnimation = 'slide-from-left-animation';
-		this.exitAnimation = 'slide-right-animation';
-		page.redirect( '/home' );
+		this.exitAnimation  = 'slide-right-animation';
+
+		page( '/home' );
 	},
 
 	_logOut: function() {
+		this.userLocation        = '';
+		this.collectionsLocation = '';
+
 		this.$.firebaseLogin.logout();
 	},
 
 	userLoggedOut: function() {
-		this.entryAnimation = 'slide-from-left-animation';
-		this.exitAnimation = 'slide-right-animation';
+		this.entryAnimation      = 'slide-from-left-animation';
+		this.exitAnimation       = 'slide-right-animation';
+		this.userLocation        = '';
+		this.collLocation        = '';
+		this.collectionsLocation = '';
+
 		page.redirect( '/login' );
 		this.fireToast( 'You are now logged out.' );
 	},

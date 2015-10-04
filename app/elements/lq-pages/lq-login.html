@@ -57,20 +57,30 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 	<div class="horizontal-section-container hero">
 		<lq-card id="card_login" heading="Log In">
 			<div class="card-content">
-				<paper-input id="loginEmail" name="username" required label="E-mail" autofocus type="email" error-message="enter a valid email address" value="{{email}}" ></paper-input>
-				<paper-input id="loginPassword" name="password" label="Password" required minlength=6 type="password" error-message="password must be 6 minimum characters" value="{{password}}" ></paper-input>
+				<paper-input
+					id="login_email" label="E-mail" type="email" name="username"
+					value="{{input_field.email}}" tabindex="1"
+					error-message="enter a valid email address"
+					pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,6}$" auto-validate="true" autofocus required></paper-input>
+				<paper-input
+					id="login_password" label="Password" type="password" name="password"
+					value="{{input_field.password}}" tabindex="2"
+					error-message="password must be 6 minimum characters"
+					minlength="6" auto-validate="true" required></paper-input>
 			</div>
+
 			<div class="card-actions">
-				<paper-button class="orange" on-tap="passwordReset" disabled$="{{_spin_password_reset}}">
-					<paper-spinner active$="{{_spin_password_reset}}"></paper-spinner>
+				<paper-button id="reset_password" class="orange" disabled on-tap="passwordReset">
+					<paper-spinner hidden$="[[!spin.password_reset]]" active></paper-spinner>
 					reset password
 				</paper-button>
-				<paper-button class="green" on-tap="login" disabled$="{{_spin_login}}">
-					<paper-spinner active$="{{_spin_login}}" hidden="{{_spin_login}}"></paper-spinner>
-					<iron-icon icon="check" hidden$="{{_spin_login}}"></iron-icon>
+				<paper-button id="login_button" class="green" on-tap="login" disabled>
+					<paper-spinner hidden$="[[!spin.login]]" active></paper-spinner>
+					<iron-icon icon="check" hidden$="[[spin.login]]"></iron-icon>
 					ok
 				</paper-button>
 			</div>
+
 			<div class="card-actions">
 				<paper-button on-tap="" disabled>
 					Google+
@@ -87,7 +97,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 			</div>
 
 			<iron-a11y-keys
-				id="login_keys"
+				id="login-keys"
 				keys="enter"
 				target="{{card_login}}"
 				on-keys-pressed="login">
@@ -98,12 +108,32 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 	<div class="horizontal-section-container hero">
 		<lq-card id="card_register" heading="Register">
 			<div class="card-content">
-				<paper-input id="regName" type="text" label="User name*" required pattern="[a-zA-Z0-9\s]+" minlength=5 value="{{reg.name}}" error-message="letters and number only. Minimun of 5 charaters" ></paper-input>
-				<paper-input id="regEmail" type="text" label="Email*" required value="{{reg.email}}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" error-message="enter a valid email address" ></paper-input>
-				<paper-input id="regEmailConfirm" type="text" label="Re-enter email*" required value="{{reg.emailConfirm}}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" error-message="email address doesn't match" ></paper-input>
-				<paper-input id="regPassword" type="password" label="Password*" required pattern=".{6,}" value="{{reg.password}}" error-message="password must be 6 characters minimum." ></paper-input>
-				<paper-input id="regPasswordConfirm" type="password" required label="Re-enter password*" minlength=6 value="{{reg.passwordConfirm}}" error-message="password doesn't match" ></paper-input>
-				<paper-dropdown-menu id="language" no-animations="true" label="Your language"  selected-item-label="{{reg.lang}}">
+				<paper-input
+					id="reg_name" label="User name*" type="text"
+					value="{{input_field.reg_name}}"
+					error-message="letters and number only. Minimun of 5 charaters"
+					pattern="[a-zA-Z0-9\s]+" minlength="5" auto-validate="true" required></paper-input>
+				<paper-input
+					id="reg_email" label="Email*" type="email"
+					value="{{input_field.reg_email}}"
+					error-message="enter a valid email address"
+					pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" auto-validate="true" required></paper-input>
+				<paper-input
+					id="reg_email_confirm" label="Re-enter email*" type="email"
+					value="{{input_field.reg_email_confirm}}"
+					error-message="email address doesn't match"
+					required></paper-input>
+				<paper-input
+					id="reg_password" label="Password*" type="password"
+					value="{{input_field.reg_password}}"
+					error-message="password must be 6 characters minimum."
+					pattern=".{6,}" auto-validate="true" required></paper-input>
+				<paper-input
+					id="reg_password_confirm"  label="Re-enter password*" type="password"
+					value="{{input_field.reg_password_confirm}}"
+					error-message="password doesn't match"
+					minlength="6" required></paper-input>
+				<paper-dropdown-menu id="language" label="Your language" selected-item-label="{{input_field.reg_lang}}">
 					<paper-menu class="dropdown-content">
 						<paper-item>English</paper-item>
 						<paper-item>Spanish</paper-item>
@@ -114,16 +144,17 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 					</paper-menu>
 				</paper-dropdown-menu>
 			</div>
+
 			<div class="card-actions">
-				<paper-button class="green" on-tap="register" disabled$="{{_spin_register}}">
-					<paper-spinner active$="{{_spin_register}}"></paper-spinner>
-					<iron-icon icon="check" hidden$="{{_spin_register}}"></iron-icon>
+				<paper-button class="green" disabled$="[[spin.register]]" on-tap="register">
+					<paper-spinner hidden$="[[!spin.register]]" active></paper-spinner>
+					<iron-icon icon="check" hidden$="[[spin.register]]"></iron-icon>
 					Register
 				</paper-button>
 			</div>
 
 			<iron-a11y-keys
-				id="register_keys"
+				id="register-keys"
 				keys="enter"
 				target="{{card_register}}"
 				on-keys-pressed="register">
@@ -152,16 +183,47 @@ Polymer({
 	is: 'lq-login',
 
 	properties: {
-		reg: Object,
-		_spin_login: false,
-		_spin_register: false,
-		_spin_password_reset: false
+
+		spin: {
+			type: Object,
+			value: function() {
+				return {
+					login: false,
+					password_reset: false,
+					register: false
+				};
+			}
+		},
+
+		input_field: {
+			type: Object,
+			value: function() {
+				return {};
+			}
+		},
+
+		reset_fields: {
+			type: Object,
+			readOnly: true,
+			value: function() {
+				return {
+					email:                '',
+					password:             '',
+					reg_name:             '',
+					reg_email:            '',
+					reg_email_confirm:    '',
+					reg_password:         '',
+					reg_password_confirm: ''
+				};
+			}
+		}
+
 	},
 
 	observers: [
-		'_verifyName( reg.name )',
-		'_verifyEmail( reg.email, reg.emailConfirm )',
-		'_verifyPassword( reg.password, reg.passwordConfirm )'
+		'_verifyLogin( input_field.email, input_field.password )',
+		'_verifyEmail( input_field.reg_email, input_field.reg_email_confirm )',
+		'_verifyPassword( input_field.reg_password, input_field.reg_password_confirm )'
 	],
 
 	attached: function() {
@@ -170,8 +232,9 @@ Polymer({
 
 	init: function() {
 		this.resetFields();
+
 		if ( lqMain.$.firebaseLogin && lqMain.$.firebaseLogin.statusKnown && lqMain.$.firebaseLogin.user && lqMain.$.firebaseLogin.user.uid ) {
-			page.redirect( '/home' );
+			page( '/home' );
 		}
 	},
 
@@ -179,109 +242,99 @@ Polymer({
 	 * Reset text fields and hide text fields errors
 	 */
 	resetFields: function() {
-		this.email    = '';
-		this.password = '';
-		this.reg      = {
-			name:             '',
-			email:            '',
-			emailConfirm:    '',
-			password:         '',
-			passwordConfirm: '',
-			lang:             ''
-		};
+		// reset all the input fields using the reset_fields object
+		var reset = JSON.parse( JSON.stringify( this.reset_fields ) );
+		this.set( 'input_field', reset );
 
-		this.$.regName.invalid            = false;
-		this.$.regEmail.invalid           = false;
-		this.$.regEmailConfirm.invalid    = false;
-		this.$.regPassword.invalid        = false;
-		this.$.regPasswordConfirm.invalid = false;
+		this.$.login_email.invalid          = false;
+		this.$.login_password.invalid       = false;
+		this.$.reg_name.invalid             = false;
+		this.$.reg_email.invalid            = false;
+		this.$.reg_email_confirm.invalid    = false;
+		this.$.reg_password.invalid         = false;
+		this.$.reg_password_confirm.invalid = false;
 	},
 
-	_verifyName() {
-		this.$.regName.validate();
+	_verifyLogin: function() {
+		this.$.login_email.validate();
+		this.$.login_password.validate();
+
+		if ( this.$.login_email.invalid === false ) {
+			this.$.reset_password.removeAttribute( 'disabled' );
+		}
+		else {
+			this.$.reset_password.setAttribute( 'disabled', true );
+		}
+
+		if ( this.$.login_email.invalid === false && this.$.login_password.invalid === false ) {
+			this.$.login_button.removeAttribute( 'disabled' );
+		}
+		else {
+			this.$.login_button.setAttribute( 'disabled', true );
+		}
 	},
 
 	_verifyEmail: function( email, emailConfirm ) {
-		this.$.regEmail.validate();
+		this.$.reg_email_confirm.invalid = true;
 
-		// return error if the value is not matching the element requirements
-		this.$.regEmailConfirm.validate();
-		if ( this.$.regEmailConfirm.invalid ) {
-			return;
-		}
-
-		// Verify if the entered email match the other one
-		this.$.regEmailConfirm.invalid = true;
-
-		if ( email === emailConfirm ) {
-			this.$.regEmailConfirm.invalid = false;
+		if ( emailConfirm === email && email.length >= 6 ) {
+			this.$.reg_email_confirm.invalid = false;
 		}
 	},
 
 	_verifyPassword: function( password, passwordConfirm ) {
-		this.$.regPassword.validate();
+		this.$.reg_password_confirm.invalid = true;
 
-		// return error if the value is not matching the element requirements
-		this.$.regPasswordConfirm.validate();
-
-		if ( this.$.regPasswordConfirm.invalid ) {
-			return;
-		}
-
-		// Verify if the entered password match the other one
-		this.$.regPasswordConfirm.invalid = true;
-
-		if ( password === passwordConfirm ) {
-			this.$.regPasswordConfirm.invalid = false;
+		if ( passwordConfirm === password && password.length >= 6 ) {
+			this.$.reg_password_confirm.invalid = false;
 		}
 	},
 
-	register: function() {
-		this._spin_register = true;
-		this.reg.lang       = this.$.language.selectedItemLabel;
-		this.$.regName.validate();
-		this.$.regEmail.validate();
-		this.$.regEmailConfirm.validate();
-		this.$.regPassword.validate();
-		this.$.regPasswordConfirm.validate();
-
-		if ( ! this.reg.lang ) {
-			lqMain.fireToast( 'Please, select your language first.' );
-			this._spin_register = false;
-			return;
-		}
-
-		if ( this.$.regName.invalid || this.$.regEmail.invalid || this.$.regEmailConfirm.invalid || this.$.regPassword.invalid || this.$.regPasswordConfirm.invalid ) {
-			lqMain.fireToast( 'Please, fix the wrong information and try again.' );
-			this._spin_register = false;
-			return;
-		}
-
-		lqMain.$.firebaseLogin.createUser( this.reg.email, this.reg.password );
-	},
-
-	/**
-	 * Verify text fields
-	 * then send the Ajax request to the API
-	 */
 	login: function() {
-		this._spin_login = true;
+		this.set( 'spin.login', true );
 
-		this.$.loginEmail.validate();
-		this.$.loginPassword.validate();
+		this.$.login_email.validate();
+		this.$.login_password.validate();
 
-		if ( this.email.length > 0 && this.password.length > 0 && this.$.loginEmail.validate() && this.$.loginPassword.validate() ) {
-			lqMain.$.firebaseLogin.login({email:this.email, password:this.password});
+		if ( this.$.login_email.validate() && this.$.login_password.validate() ) {
+			lqMain.$.firebaseLogin.login({email:this.input_field.email, password:this.input_field.password});
 		}
 		else {
 			lqMain.fireToast( 'Please, check the entered details and try again.' );
-			this._spin_login = false;
+			this.set( 'spin.login', false );
 		}
 	},
 
 	passwordReset: function() {
-		this._spin_password_reset = true;
-		lqMain.$.firebaseLogin.sendPasswordResetEmail(this.email);
+		this.set( 'spin.password_reset', true );
+		lqMain.$.firebaseLogin.sendPasswordResetEmail( this.input_field.email );
+	},
+
+	register: function() {
+		this.set( 'spin.register', true );
+
+		this.$.reg_name.validate();
+		this.$.reg_email.validate();
+		this.$.reg_email_confirm.validate();
+		this.$.reg_password.validate();
+		this.$.reg_password_confirm.validate();
+
+		this.input_field.reg_lang = this.$.language.selectedItemLabel;
+
+		if ( ! this.input_field.reg_lang ) {
+			lqMain.fireToast( 'Please, select a language first.' );
+			this.set( 'spin.register', false );
+
+			return;
+		}
+
+		if ( this.$.reg_name.invalid || this.$.reg_email.invalid || this.$.reg_email_confirm.invalid || this.$.reg_password.invalid || this.$.reg_password_confirm.invalid ) {
+			lqMain.fireToast( 'Please, fix the wrong information and try again.' );
+			this.set( 'spin.register', false );
+			return;
+		}
+
+		lqMain.$.firebaseLogin.createUser( this.input_field.reg_email_confirm, this.input_field.reg_password_confirm );
 	}
 
 });
