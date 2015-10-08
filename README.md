@@ -1,5 +1,7 @@
 ## LanguageQUIZ
 
+[![Join the chat at https://gitter.im/andreasonny83/LanguageQUIZ](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/andreasonny83/LanguageQUIZ?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 LanguageQUIZ is an open source project based on Polymer 1.0
 
 ## Getting Started
