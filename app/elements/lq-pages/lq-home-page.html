@@ -2,402 +2,427 @@
 @license
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
-
 <dom-module id="lq-home-page">
-<template>
-	<style include="lq-shared-styles">
-	:host {
-		display: block;
-		height: 100%;
-	}
-
-	#searchBox {
-		visibility: hidden;
-		width: 90%;
-		max-width: 1100px;
-		height: 50px;
-		margin: 0 auto;
-		padding: 0 15px;
-		line-height: 50px;
-		font-size: 26px;
-		text-transform: lowercase;
-		outline: none;
-		border: none;
-		border-radius: 3px;
-		background-color: rgba(255, 255, 255, 0.4);
-		-webkit-user-select: none;
-		opacity: 0;
-		align-items: center;
-		-webkit-transition: all .5s;
-		transition: all .5s;
-		transform: translateY(-10px);
-
-		@apply(--layout-horizontal);
-	}
-
-	#searchInput {
-		height: 40px;
-		line-height: 40px;
-		font-size: 26px;
-		text-transform: lowercase;
-		color: #fff;
-		outline: none;
-		border: none;
-		background: none;
-	}
-
-	#searchInput::-webkit-input-placeholder { color:#eee; }
-
-	#searchBox iron-icon {
-		color: #fff;
-	}
-
-	#searchBox.float {
-		background-color: rgba(255, 255, 255, 0.95);
-		box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.52);
-	}
-
-	#searchBox.float #searchInput {
-		color: #333;
-	}
-
-	#searchBox.float iron-icon {
-		color: #333;
-	}
-
-	paper-icon-button.bottom {
-		-webkit-transition: transform .5s;
-		transition: transform .5s;
-	}
-
-	paper-icon-button.red {
-		color: #F00;
-	}
-
-	paper-toolbar[search] #searchBox {
-		visibility: visible;
-		opacity: 1;
-		transform: translateY(28px);
-	}
-
-	paper-toolbar[search] #searchBox.float {
-		transform: translateY(100px);
-	}
-
-	paper-toolbar[search] paper-icon-button.right {
-		transform: translateX(120px);
-	}
-
-	paper-toolbar[search] paper-icon-button.left {
-		transform: translateX(-80px);
-	}
-
-	paper-menu-button {
-		padding: 0;
-	}
-
-	.avatar {
-		--iron-icon-height: 40px;
-		--iron-icon-width: 40px;
-		--paper-icon-button: {
-			padding: 5px;
-		};
-	}
-
-	.avatar ::content iron-icon {
-		border: 2px solid #fff;
-		border-radius: 50%;
-	}
-
-	.avatar ::content iron-icon img {
-		border-radius: 50%;
-	}
-
-	.content {
-		max-width: 1400px;
-		margin: 0 auto;
-	}
-
-	lq-tile[small] {
-		--lq-tile: {
-			width: calc(33.33% - 24px);
-		};
-		--lq-card-header-image: {
-			width: 100%;
-			max-width: 440px;
-			height: 250px;
-		};
-		--lq-card-header-text: {
-			padding: 8px 12px;
-			background-color: rgba(255,255,255,0.5);
-		};
-	}
-
-	lq-tile[large] {
-		--lq-tile: {
-			width: 100%;
-		};
-
-		--lq-card-header-image: {
-			width: 50%;
-			height: 250px;
-		};
-	}
-
-	@media all and (max-width: 639px) {
-		#userName {
-			display: none;
-		}
-
-		#searchBox {
-			height: 48px;
-			line-height: 48px;
-			font-size: 24px;
-		}
-
-		paper-toolbar[search] #searchBox {
-			transform: translateY(40px);
-		}
-
-		paper-toolbar[search] #searchBox.float {
-			transform: translateY(110px);
-		}
-
-		lq-tile[small] {
-			width: 100%;
-
-			--lq-card-header-image: {
-				width: 100%;
-				height: 250px;
-			};
-		}
-	}
-
-	@media all and (min-width: 601px) and (max-width: 900px) {
-		lq-tile[small] {
-			width: calc(50% - 24px);
-
-			--lq-card-header-image: {
-				width: 100%;
-				height: 250px;
-			};
-		}
-	}
-	</style>
-
-	<!-- Home -->
-	<paper-scroll-header-panel condenses header-height="160" condensed-header-height="128">
-
-		<!-- Main Toolbar -->
-		<paper-toolbar class="tall" search$={{search}}>
-			<paper-menu-button>
-				<paper-icon-button src="[[userData.avatar]]" class="dropdown-trigger avatar"></paper-icon-button>
-					<paper-menu class="dropdown-content">
-					<paper-item on-tap="_userProfile">Profile settings</paper-item>
-					<paper-item>My collections</paper-item>
-					<paper-item>Options</paper-item>
-					<paper-item on-tap="_logOut">Log Out</paper-item>
-				</paper-menu>
-			</paper-menu-button>
-			<span id="userName">[[userData.username]]</span>
-			<div class="title">The LanguageQUIZ</div>
-			<paper-icon-button on-tap="searchToggle" icon="search"></paper-icon-button>
-
-			<div class="middle" id="searchBox">
-				<input type="text" id="searchInput" class="flex" maxlength="30" value="{{searchString::input}}" placeholder="Search a collection">
-				<iron-icon icon="cancel" on-tap="searchToggle"></iron-icon>
-			</div>
-
-			<paper-icon-button class="bottom left social" icon="assessment"></paper-icon-button>
-			<div class="bottom flex"></div>
-			<paper-icon-button class="bottom right add" icon="add-circle" on-tap="_newCollection"></paper-icon-button>
-			<paper-icon-button class="bottom right favorite" style$="{{_favoriteToggle(favorites)}}" icon="favorite" on-tap="_favorites"></paper-icon-button>
-
-		</paper-toolbar>
-
-		<!-- Main Content -->
-		<div class="content">
-
-			<div class="horizontal-section-container">
-				<h2>Collection of the month</h2>
-			</div>
-			<div class="horizontal-section-container">
-				<lq-tile large image="http://lotus.se-mc.com/image/www-static.se-mc.com/blogs.dir/0/files/2015/07/xperia-z5-camera-hybrid-af-desktop-f6cc693928982eb8a41dc345b2e9285b.jpg?wid=5000" placeholder="[[highlight_placeholder]]" sizing="cover" fade></lq-tile>
-			</div>
-
-			<div class="horizontal-section-container">
-				<h2>Collections from the world</h2>
-			</div>
-			<div class="horizontal-section-container">
-				<array-selector id="selector" items="{{collections}}" selected="{{collectionsSelected}}" multi toggle></array-selector>
-
-				<!-- <template id="collectionsList" is="dom-repeat" items="[[collectionsSelected]]" as="collection" filter="filterCollections">
-					<lq-tile small id="[[collection.uid]]"
-						title="[[collection.name]]"
-						placeholder="[[tile_placeholder]]" sizing="cover" fade>
-						<p class="description">[[collection.description]]</p>
-					</lq-tile>
-				</template> -->
-				<template id="collectionsList" is="dom-repeat" items="[[collectionsSelected]]" as="collection" filter="filterCollections">
-					<lq-tile small uid="[[collection.__firebaseKey__]]"
-						title="[[collection.name]]" user-favorite$="{{collection.favorite}}"
-						placeholder="[[tile_placeholder]]" sizing="cover" fade>
-						<p class="description">[[collection.description]]</p>
-					</lq-tile>
-				</template>
-
-				<!-- <lq-tile id="tileLoading" loading></lq-tile> -->
-			</div>
-		</div>
-
-	</paper-scroll-header-panel>
-</template>
-
-<script>
-// custom transformation: scale header's title
-addEventListener( 'paper-header-transform', function( e ) {
-	var title = document.querySelector( '.title' );
-	var d     = e.detail;
-	var m     = d.height - d.condensedHeight;
-	var scale = Math.max(0.75, ( m - d.y ) / ( m / 0.25 )  + 0.75 );
-
-	Polymer.Base.transform( 'scale(' + scale + ') translateZ(0)', title );
-
-	if ( d.y > 100 ) {
-		Polymer.Base.toggleClass( 'float', true, document.querySelector( '#searchBox' ) );
-	}
-	else {
-		Polymer.Base.toggleClass( 'float', false, document.querySelector( '#searchBox' ) );
-	}
-});
-
-Polymer({
-	is: 'lq-home-page',
-
-	properties: {
-		location: {
-			type: String,
-			value: ''
-		},
-
-		searchString: {
-			type: String,
-			value: '',
-			observer: 'refreshFilter'
-		},
-
-		favorites: {
-			type: Boolean,
-			value: false
-		},
-
-		collections: {
-			type: Array,
-			observer: 'prepareCollections'
-		}
-
-	},
-
-	ready: function() {
-		this.collectionsSelected = [];
-	},
-
-	prepareCollections: function() {
-		if ( ! this.collections.length ) {
-			this.async( function() {
-				this.prepareCollections();
-			}, 1500);
-		}
-
-		// if ( this.collectionsSelected.length > 0 ) return;
-		this.collectionsSelected = [];
-
-		for ( var i = 0; i < this.collections.length; i++ ) {
-			// this.collections[i].__firebaseKey__
-			// lqMain.lqUser.favorites
-			fav_index = lqMain.lqUser.favorites.indexOf( this.collections[i].__firebaseKey__ );
-			this.collections[i].favorite = fav_index >= 0 ? true : false;
-			this.push( 'collectionsSelected', this.collections[i] );
-		}
-
-		// this.refresh_favorites = false;
-		// this.$.collectionsList.render();
-		this.refreshFilter();
-
-	},
-
-	_favorites: function() {
-		this.favorites = ! this.favorites;
-
-		this.refreshFilter();
-	},
-
-	_favoriteToggle: function( favorites ) {
-		return favorites ? 'color: red' : 'color: white';
-	},
-
-	/**
-	 * Filter the collections according to the input search when available
-	 */
-	filterCollections: function( item ) {
-		var favorites = this.userData.favorites;
-		var new_item  = JSON.parse( JSON.stringify( item ) );
-		new_item.user_favorite = false;
-
-		if ( this.refresh_favorites ) {
-			return;
-		}
-
-		if ( ! this.favorites || ! favorites ) {
-			return new_item.name.match( new RegExp( this.searchString, 'i' ) );
-		}
-
-		for ( var i = 0; i < favorites.length; i++ ) {
-			if ( item.__firebaseKey__ === favorites[i] ) {
-				new_item.user_favorite = true;
-				return new_item.name.match( new RegExp( this.searchString, 'i' ) );
-			}
-		}
-	},
-
-	refreshFilter: function() {
-		this.refresh_favorites = true;
-		this.$.collectionsList.render();
-		this.refresh_favorites = false;
-		this.$.collectionsList.render();
-	},
-
-	/**
-	 * searchToggle
-	 * toggle the search box when the search button is clicked
-	 */
-	searchToggle: function() {
-		this.search = ! this.search;
-
-		if ( ! this.search ) {
-			this.searchString = '';
-			return;
-		}
-
-		this.async( function() {
-			this.$.searchInput.select();
-			this.$.searchInput.focus();
-		}, 500 );
-	},
-
-	// Menu Items
-
-	_newCollection: function() {
-		this.fire( 'new-collection' );
-	},
-
-	_userProfile: function() {
-		this.fire( 'user-profile' );
-	},
-
-	_logOut: function() {
-		this.fire( 'log-out' );
-	}
-
-});
-</script>
+  <template>
+    <style include="lq-shared-styles">
+    :host {
+      display: block;
+      height: 100%;
+    }
+
+    #searchBox {
+      visibility: hidden;
+      width: 90%;
+      max-width: 1100px;
+      height: 50px;
+      margin: 0 auto;
+      padding: 0 15px;
+      line-height: 50px;
+      font-size: 26px;
+      text-transform: lowercase;
+      outline: none;
+      border: none;
+      border-radius: 3px;
+      background-color: rgba(255, 255, 255, 0.4);
+      -webkit-user-select: none;
+      opacity: 0;
+      align-items: center;
+      -webkit-transition: all .5s;
+      transition: all .5s;
+      transform: translateY(-10px);
+
+      @apply(--layout-horizontal);
+    }
+
+    #searchInput {
+      height: 40px;
+      line-height: 40px;
+      font-size: 26px;
+      text-transform: lowercase;
+      color: #fff;
+      outline: none;
+      border: none;
+      background: none;
+    }
+
+    #searchInput::-webkit-input-placeholder { color:#eee; }
+
+    #searchBox iron-icon {
+      color: #fff;
+      cursor: pointer;
+    }
+
+    #searchBox.float {
+      background-color: rgba(255, 255, 255, 0.95);
+      box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.52);
+    }
+
+    #searchBox.float #searchInput {
+      color: #333;
+    }
+
+    #searchBox.float #searchInput::-webkit-input-placeholder {
+      color: #999;
+    }
+
+    #searchBox.float iron-icon {
+      color: #999;
+    }
+
+    paper-icon-button.bottom {
+      -webkit-transition: transform .5s;
+      transition: transform .5s;
+    }
+
+    paper-icon-button.red {
+      color: #F00;
+    }
+
+    paper-toolbar[search] #searchBox {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(28px);
+    }
+
+    paper-toolbar[search] #searchBox.float {
+      transform: translateY(100px);
+    }
+
+    paper-toolbar[search] paper-icon-button.right {
+      transform: translateX(120px);
+    }
+
+    paper-toolbar[search] paper-icon-button.left {
+      transform: translateX(-80px);
+    }
+
+    paper-menu-button {
+      padding: 0;
+    }
+
+    .avatar {
+      --iron-icon-height: 40px;
+      --iron-icon-width: 40px;
+      --paper-icon-button: {
+        padding: 5px;
+      };
+    }
+
+    .avatar ::content iron-icon {
+      border: 2px solid #fff;
+      border-radius: 50%;
+    }
+
+    .avatar ::content iron-icon img {
+      border-radius: 50%;
+    }
+
+    .content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    lq-tile[small] {
+      --lq-tile: {
+        width: calc(33.33% - 24px);
+      };
+      --lq-card-header-image: {
+        width: 100%;
+        max-width: 440px;
+        height: 250px;
+      };
+      --lq-card-header-text: {
+        padding: 8px 12px;
+        background-color: rgba(255,255,255,0.5);
+      };
+    }
+
+    lq-tile[large] {
+      --lq-tile: {
+        width: 100%;
+      };
+
+      --lq-card-header-image: {
+        width: 50%;
+        height: 250px;
+      };
+    }
+
+    @media all and (max-width: 639px) {
+      #userName {
+        display: none;
+      }
+
+      #searchBox {
+        height: 48px;
+        line-height: 48px;
+        font-size: 24px;
+      }
+
+      paper-toolbar[search] #searchBox {
+        transform: translateY(40px);
+      }
+
+      paper-toolbar[search] #searchBox.float {
+        transform: translateY(110px);
+      }
+
+      lq-tile[small] {
+        width: 100%;
+
+        --lq-card-header-image: {
+          width: 100%;
+          height: 250px;
+        };
+      }
+    }
+
+    @media all and (min-width: 601px) and (max-width: 900px) {
+      lq-tile[small] {
+        width: calc(50% - 24px);
+
+        --lq-card-header-image: {
+          width: 100%;
+          height: 250px;
+        };
+      }
+    }
+    </style>
+
+    <!-- Home -->
+    <paper-scroll-header-panel condenses header-height="160" condensed-header-height="128">
+
+      <!-- Main Toolbar -->
+      <paper-toolbar class="tall" search$={{search}}>
+        <paper-menu-button>
+          <paper-icon-button src="[[userData.avatar]]" class="dropdown-trigger avatar"></paper-icon-button>
+            <paper-menu class="dropdown-content">
+            <paper-item on-tap="_userProfile">Profile settings</paper-item>
+            <paper-item>My collections</paper-item>
+            <paper-item>Options</paper-item>
+            <paper-item on-tap="_logOut">Log Out</paper-item>
+          </paper-menu>
+        </paper-menu-button>
+        <span id="userName">[[userData.username]]</span>
+        <div class="title">The LanguageQUIZ</div>
+        <paper-icon-button on-tap="searchToggle" icon="search"></paper-icon-button>
+
+        <div class="middle" id="searchBox">
+          <input type="text" id="searchInput" class="flex" maxlength="30" value="{{searchString::input}}" placeholder="Search a collection">
+          <iron-icon icon="cancel" on-tap="searchToggle"></iron-icon>
+        </div>
+
+        <paper-icon-button class="bottom left social" icon="assessment"></paper-icon-button>
+        <div class="bottom flex"></div>
+        <paper-icon-button class="bottom right add" icon="add-circle" on-tap="_newCollection"></paper-icon-button>
+        <paper-icon-button class="bottom right favorite" style$="[[toggleFavorite(favorites)]]" icon="favorite" on-tap="_favorites"></paper-icon-button>
+
+      </paper-toolbar>
+
+      <!-- Main Content -->
+      <div class="content">
+
+        <div class="horizontal-section-container">
+          <h2>Collection of the month</h2>
+        </div>
+        <div class="horizontal-section-container">
+          <lq-tile large image="http://lotus.se-mc.com/image/www-static.se-mc.com/blogs.dir/0/files/2015/07/xperia-z5-camera-hybrid-af-desktop-f6cc693928982eb8a41dc345b2e9285b.jpg?wid=5000" placeholder="[[highlight_placeholder]]" sizing="cover" fade></lq-tile>
+        </div>
+
+        <div class="horizontal-section-container">
+          <h2>Collections from the world</h2>
+        </div>
+        <div class="horizontal-section-container">
+          <array-selector id="selector" items="{{collections}}" selected="{{collectionsSelected}}" multi toggle></array-selector>
+
+          <template id="collectionsList" is="dom-repeat" items="{{collectionsSelected}}" as="collection" filter="filterCollections">
+            <lq-tile small uid="[[collection.__firebaseKey__]]"
+              title="[[collection.name]]" user-favorite$="[[checkFavorites(collection.__firebaseKey__)]]"
+              placeholder="[[tile_placeholder]]" sizing="cover" fade>
+              <p class="description">[[collection.description]]</p>
+            </lq-tile>
+          </template>
+
+          <!-- <lq-tile id="tileLoading" loading></lq-tile> -->
+        </div>
+        <!-- <event-infinite-scroll
+            scroll-offset="100"
+            loading-delay="1000"
+            on-reach-bottom="bottomReached">
+        </event-infinite-scroll> -->
+      </div>
+
+    </paper-scroll-header-panel>
+  </template>
+
+  <script>
+    'use strict';
+
+    // custom transformation: scale header's title
+    addEventListener( 'paper-header-transform', function( e ) {
+      var title = document.querySelector( '.title' );
+      var d     = e.detail;
+      var m     = d.height - d.condensedHeight;
+      var scale = Math.max(0.75, ( m - d.y ) / ( m / 0.25 )  + 0.75 );
+
+      Polymer.Base.transform( 'scale(' + scale + ') translateZ(0)', title );
+
+      if ( d.y > 100 ) {
+        Polymer.Base.toggleClass( 'float', true, document.querySelector( '#searchBox' ) );
+      }
+      else {
+        Polymer.Base.toggleClass( 'float', false, document.querySelector( '#searchBox' ) );
+      }
+    });
+
+    Polymer({
+      is: 'lq-home-page',
+
+      properties: {
+        location: {
+          type: String,
+          value: ''
+        },
+
+        searchString: {
+          type: String,
+          value: '',
+          observer: 'refreshFilter'
+        },
+
+        favorites: {
+          type: Boolean,
+          value: false
+        },
+
+        collections: {
+          type: Array,
+          observer: 'prepareCollections'
+        }
+
+      },
+
+      ready: function() {
+        this.collectionsSelected = [];
+      },
+
+      prepareCollections: function() {
+        if ( ! this.collections.length ) {
+          this.async( function() {
+            this.prepareCollections();
+          }, 1500);
+        }
+
+        // if ( this.collectionsSelected.length > 0 ) return;
+        this.collectionsSelected = [];
+
+        for ( var i = 0; i < this.collections.length; i++ ) {
+          // this.collections[i].__firebaseKey__
+          // lqMain.lqUser.favorites
+          // var fav_index = lqMain.lqUser.favorites.indexOf( this.collections[i].__firebaseKey__ );
+          // this.collections[i].favorite = fav_index >= 0 ? true : false;
+          this.push( 'collectionsSelected', this.collections[i] );
+        }
+
+        // this.refresh_favorites = false;
+        // this.$.collectionsList.render();
+        this.refreshFilter();
+
+      },
+
+      /**
+       * Check if the collection is a favorite one
+       * @param  [String] coll_id  The collection id
+       * @return [Bool]            Return true if the collection is a favorite
+       */
+      checkFavorites: function( coll_id ) {
+        for ( let fav_id in lqMain.lqFavorites ) {
+          if ( fav_id === coll_id ) return true;
+        }
+
+        return false;
+      },
+
+      _favorites: function() {
+        this.favorites = ! this.favorites;
+
+        this.refreshFilter();
+      },
+
+      toggleFavorite: function( favorites ) {
+        return favorites ? 'color: red' : 'color: white';
+      },
+
+      /**
+       * Filter the collections according to the input search when available
+       */
+      filterCollections: function( item ) {
+        var favorites = this.userData.favorites;
+
+        // Perform a refresh
+        if ( this.refresh_fiter ) return false;
+
+        // return the collections that match the search input
+        if ( this.searchString.length > 0 ) {
+          return item.name.match( new RegExp( this.searchString, 'i' ) );
+        }
+
+        if ( ! this.favorites ) {
+          // If the favorites are not selected and nothing is present in the input search,
+          // return all the collections
+          return true;
+        }
+
+        // Filter the results with the favorites
+        for ( let key in favorites ) {
+          if ( item.__firebaseKey__ === key ) {
+            return true;
+          }
+        }
+
+      },
+
+      refreshFilter: function() {
+        this.refresh_fiter = true;
+        this.$.collectionsList.render();
+        this.refresh_fiter = false;
+        this.$.collectionsList.render();
+      },
+
+      /**
+       * searchToggle
+       * toggle the search box when the search button is clicked
+       */
+      bottomReached: function() {},
+
+      searchToggle: function() {
+        this.search = ! this.search;
+
+        if ( ! this.search ) {
+          this.searchString = '';
+          return;
+        }
+
+        this.async( function() {
+          this.$.searchInput.select();
+          this.$.searchInput.focus();
+        }, 500 );
+      },
+
+      // Menu Items
+
+      _newCollection: function() {
+        this.fire( 'new-collection' );
+      },
+
+      _userProfile: function() {
+        this.fire( 'user-profile' );
+      },
+
+      _logOut: function() {
+        this.fire( 'log-out' );
+      }
+
+    });
+  </script>
+</dom-module>

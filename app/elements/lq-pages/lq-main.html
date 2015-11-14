@@ -2,288 +2,291 @@
 @license
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
-
 <dom-module id="lq-main">
-<template>
-	<style include="lq-shared-styles">
-	:host {
-		display: block;
-		height: 100%;
-	}
-	</style>
-	<neon-animated-pages id="pages" class="flex" selected="[[selected]]" entry-animation="[[entryAnimation]]" exit-animation="[[exitAnimation]]">
+  <template>
+    <style include="lq-shared-styles">
+    :host {
+      display: block;
+      height: 100%;
+    }
+    </style>
 
-		<lq-login id="lqLogin" on-log-out="_logOut"></lq-login>
-		<lq-home-page id="lqHome" user-data="{{lqUser}}" collections="{{collections}}" on-tile-click="_onCollection" on-new-collection="_newCollection" on-user-profile="_userProfile" on-edit-collection="_editCollection" on-toggle-favorite="_toggleFavorite" on-log-out="_logOut" on-user-profile="_userProfile"></lq-home-page>
-		<lq-user-profile id="lqUserProfile" on-user-changed="checkUserDetailChanged" user="{{lqUser}}" on-go-back="_goBack"></lq-user-profile>
-		<lq-user-collection id="lqUserCollection" on-go-back="_goBack"></lq-user-collection>
-		<lq-collection-edit id="lqCollectionEdit" collection="{{lqEditCollection}}" on-go-back="_goBack"></lq-collection-edit>
+    <neon-animated-pages id="pages" class="flex" selected="[[selected]]" entry-animation="[[entryAnimation]]" exit-animation="[[exitAnimation]]">
 
-	</neon-animated-pages>
+      <lq-login id="lqLogin" on-log-out="_logOut"></lq-login>
+      <lq-home-page id="lqHome" user-data="{{lqUser}}" collections="{{collections}}" on-tile-click="_onCollection" on-new-collection="_newCollection" on-user-profile="_userProfile" on-edit-collection="_editCollection" on-toggle-favorite="_toggleFavorite" on-log-out="_logOut" on-user-profile="_userProfile"></lq-home-page>
+      <lq-user-profile id="lqUserProfile" on-user-changed="checkUserDetailChanged" user="{{lqUser}}" on-go-back="_goBack"></lq-user-profile>
+      <lq-user-collection id="lqUserCollection" on-go-back="_goBack"></lq-user-collection>
+      <lq-collection-edit id="lqCollectionEdit" collection="{{lqEditCollection}}" on-go-back="_goBack"></lq-collection-edit>
 
-	<paper-toast id="toast"></paper-toast>
+    </neon-animated-pages>
 
-	<lq-page-loading id="spinner"></lq-page-loading>
+    <paper-toast id="toast"></paper-toast>
 
-	<firebase-auth id="firebaseLogin" location="[[apiDir]]" provider="password" user="{{user}}" on-login="userLoggedIn" on-user-created="userRegistered" on-logout="userLoggedOut" on-error="firebaseError" on-password-changed="passwordChanged" on-email-changed="emailChanged" on-password-reset="passwordReset"></firebase-auth>
+    <lq-page-loading id="spinner"></lq-page-loading>
 
-	<firebase-document id="lqUserDB" location="{{userLocation}}" data="{{lqUser}}"></firebase-document>
+    <firebase-auth id="firebaseLogin" location="[[apiDir]]" provider="password" user="{{user}}" on-login="userLoggedIn" on-user-created="userRegistered" on-logout="userLoggedOut" on-error="firebaseError" on-password-changed="passwordChanged" on-email-changed="emailChanged" on-password-reset="passwordReset"></firebase-auth>
 
-	<firebase-document id="collectionEdit" location="{{collLocation}}" data="{{lqEditCollection}}"></firebase-document>
+    <firebase-collection
+      id="lqCollections"
+      location="https://languagequiz-dev.firebaseio.com/collections"
+      data="{{collections}}"></firebase-collection>
 
-	<firebase-collection id="lqCollections" location="[[collectionsLocation]]" data="{{collections}}"></firebase-collection>
-</template>
+    <firebase-document id="lqUserDB"        location="{{userLocation}}" data="{{lqUser}}"></firebase-document>
+    <firebase-document id="lqUserFavorites" location="{{favoritesLocation}}" data="{{lqFavorites}}"></firebase-document>
+    <firebase-document id="collectionEdit"  location="{{collLocation}}" data="{{lqEditCollection}}"></firebase-document>
+  </template>
 
-<script>
-Polymer({
-	is: 'lq-main',
+  <script>
+  Polymer({
+    is: 'lq-main',
 
-	properties: {
-		/**
-		 * the database url
-		 * @type {String}
-		 */
-		apiDir: {
-			type: String,
-			value: 'https://languagequiz-dev.firebaseio.com'
-		},
+    properties: {
+      /**
+       * the database url
+       * @type {String}
+       */
+      apiDir: {
+        type: String,
+        value: 'https://languagequiz-dev.firebaseio.com'
+      },
 
-		/**
-		 * this point to an url inside the database
-		 * in where the user settings are stored
-		 * @type {String}
-		 */
-		userLocation: String,
+      /**
+       * this point to an url inside the database
+       * in where the user settings are stored
+       * @type {String}
+       */
+      userLocation: String,
 
-		/**
-		 * the user information fetched from the database
-		 * @type {Object}
-		 */
-		// lqUser: Object,
+      /**
+       * the user information fetched from the database
+       * @type {Object}
+       */
+      // lqUser: Object,
 
-		/**
-		 * global collections
-		 * @type {Object}
-		 */
-		collections: Object,
+      /**
+       * global collections
+       * @type {Object}
+       */
+      collections: Object,
 
-		/**
-		 * the selected view
-		 * neon-animated-pages
-		 * @type {Number}
-		 */
-		selected: {
-			type: Number,
-			value: 0
-		},
+      /**
+       * the selected view
+       * neon-animated-pages
+       * @type {Number}
+       */
+      selected: {
+        type: Number,
+        value: 0
+      },
 
-		lqUser_default: {
-			type: Object,
-			value: function() {
-				return {};
-			}
-		}
-	},
+      lqUser_default: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      }
+    },
 
-	observers: [
-		'dataInformation(lqUser.*, collections, selected)',
-		'userAvatarChanged(lqUser.avatar)'
-	],
+    observers: [
+      'dataInformation(lqUser.*, collections, selected)',
+      'userAvatarChanged(lqUser.avatar)'
+    ],
 
-	/**
-	 * Fire a toast message
-	 * If busy, queue the request and retry after 1 second.
-	 * @param String message
-	 */
-	fireToast: function( message ) {
-		if ( ! toast.visible ) {
-			toast.text = message;
-			toast.show();
-		}
-		else {
-			setTimeout( function() {
-				lqMain.fireToast( message );
-			}, 1000);
-		}
-	},
+    /**
+     * Fire a toast message
+     * If busy, queue the request and retry after 1 second.
+     * @param String message
+     */
+    fireToast: function( message ) {
+      if ( ! toast.visible ) {
+        toast.text = message;
+        toast.show();
+      }
+      else {
+        setTimeout( function() {
+          lqMain.fireToast( message );
+        }, 1000);
+      }
+    },
 
-	resetSpinners: function() {
-		lqLogin.set( 'spin.login', false );
-		lqLogin.set( 'spin.register', false );
-		lqLogin.set( 'spin.password_reset', false );
-	},
+    resetSpinners: function() {
+      lqLogin.set( 'spin.login', false );
+      lqLogin.set( 'spin.register', false );
+      lqLogin.set( 'spin.password_reset', false );
+    },
 
-	/**
-	 * Show the loading spinner while fetching the user and collection information
-	 */
-	dataInformation: function() {
-		if ( this.selected > 0 ) {
-			if ( this.collections && this.lqUser ) {
-				this.$.spinner.removeAttribute( 'active' );
-			}
-			else {
-				this.$.spinner.toggleAttribute( 'active', true );
-			}
-		}
-	},
+    /**
+     * Show the loading spinner while fetching the user and collection information
+     */
+    dataInformation: function() {
+      if ( this.selected > 0 ) {
+        if ( this.collections && this.lqUser ) {
+          this.$.spinner.removeAttribute( 'active' );
+        }
+        else {
+          this.$.spinner.toggleAttribute( 'active', true );
+        }
+      }
+    },
 
-	userRegistered: function() {
-		this.resetSpinners();
+    userRegistered: function() {
+      this.resetSpinners();
 
-		this.userRegistration = true;
+      this.userRegistration = true;
 
-		this.regInfo = {
-			username: lqLogin.input_field.reg_name,
-			lang: lqLogin.input_field.reg_lang
-		};
+      this.regInfo = {
+        username: lqLogin.input_field.reg_name,
+        lang: lqLogin.input_field.reg_lang
+      };
 
-		lqMain.fireToast( 'You are now registerd. Logging in...' );
+      lqMain.fireToast( 'You are now registerd. Logging in...' );
 
-		this.$.firebaseLogin.login({email:lqLogin.input_field.reg_email_confirm, password:lqLogin.input_field.reg_password_confirm});
-	},
+      this.$.firebaseLogin.login({email:lqLogin.input_field.reg_email_confirm, password:lqLogin.input_field.reg_password_confirm});
+    },
 
-	checkUserDetailChanged: function( value_a, value_b ) {
-		if ( value_b.key === 'avatar' ) {
-			if ( this.lqUser.avatar === lqUserProfile.userBuffer.avatar ) {
-				this.fireToast( 'Your avar has been updated.' );
-			}
-		}
-	},
+    checkUserDetailChanged: function( value_a, value_b ) {
+      if ( value_b.key === 'avatar' ) {
+        if ( this.lqUser.avatar === lqUserProfile.userBuffer.avatar ) {
+          this.fireToast( 'Your avar has been updated.' );
+        }
+      }
+    },
 
-	userAvatarChanged: function() {
-		lqUserProfile.set( 'userBuffer.avatar', this.lqUser.avatar );
-	},
+    userAvatarChanged: function() {
+      lqUserProfile.set( 'userBuffer.avatar', this.lqUser.avatar );
+    },
 
-	userLoggedIn: function() {
-		this.resetSpinners();
+    userLoggedIn: function() {
+      this.resetSpinners();
 
-		if ( this.userRegistration ) {
-			// Store the new user inside the users table
-			var usersRef = this.$.firebaseLogin.ref.child( 'users' ).child( this.user.uid );
-			usersRef.set( this.regInfo );
-		}
+      if ( this.userRegistration ) {
+        // Store the new user inside the users table
+        var usersRef = this.$.firebaseLogin.ref.child( 'users' ).child( this.user.uid );
+        usersRef.set( this.regInfo );
+      }
 
-		this.entryAnimation      = 'slide-from-right-animation';
-		this.exitAnimation       = 'slide-left-animation';
-		this.userLocation        = this.apiDir + '/users/' + this.user.uid;
-		this.collectionsLocation = this.apiDir + '/collections/';
+      this.entryAnimation      = 'slide-from-right-animation';
+      this.exitAnimation       = 'slide-left-animation';
+      this.userLocation        = this.apiDir + '/users/' + this.user.uid;
+      this.collectionsLocation = this.apiDir + '/collections/';
+      this.favoritesLocation   = this.apiDir + '/users/' + this.user.uid + '/favorites';
 
-		page( '/home' );
-		lqLogin.resetFields();
+      page( '/home' );
+      lqLogin.resetFields();
 
-		this.fireToast( 'You are now logged in.' );
-	},
+      this.fireToast( 'You are now logged in.' );
+    },
 
-	passwordChanged: function() {
-		this.resetSpinners();
-		this.fireToast( 'Your new password has been saved.' );
-		lqUserProfile.userReset = {};
-	},
+    passwordChanged: function() {
+      this.resetSpinners();
+      this.fireToast( 'Your new password has been saved.' );
+      lqUserProfile.userReset = {};
+    },
 
-	emailChanged: function() {
-		this.resetSpinners();
-		this.fireToast( 'Your new email has been saved.' );
-		lqUserProfile.userReset = {};
-	},
+    emailChanged: function() {
+      this.resetSpinners();
+      this.fireToast( 'Your new email has been saved.' );
+      lqUserProfile.userReset = {};
+    },
 
-	_newCollection: function() {
-		this.entryAnimation = 'slide-from-right-animation';
-		this.exitAnimation  = 'slide-left-animation';
+    _newCollection: function() {
+      this.entryAnimation = 'slide-from-right-animation';
+      this.exitAnimation  = 'slide-left-animation';
 
-		page( '/new-collection' );
-	},
+      page( '/new-collection' );
+    },
 
-	_userProfile: function() {
-		this.entryAnimation = 'slide-from-right-animation';
-		this.exitAnimation  = 'slide-left-animation';
+    _userProfile: function() {
+      this.entryAnimation = 'slide-from-right-animation';
+      this.exitAnimation  = 'slide-left-animation';
 
-		page( '/profile' );
-	},
+      page( '/profile' );
+    },
 
-	_editCollection: function( e ) {
-		lqMain.entryAnimation = 'slide-from-right-animation';
-		lqMain.exitAnimation  = 'slide-left-animation';
+    _editCollection: function( e ) {
+      lqMain.entryAnimation = 'slide-from-right-animation';
+      lqMain.exitAnimation  = 'slide-left-animation';
 
-		page.redirect( '/collections/' + e.detail.uid );
-	},
+      page.redirect( '/collections/' + e.detail.uid );
+    },
 
-	_toggleFavorite: function( e ) {
-		var usersRef, collection_uid, favorites, fav_index;
+    /**
+     * Toggle the sected collection to the user's favorites list
+     *
+     * @param  [Object] e  The selected colection
+     */
+    _toggleFavorite: function( e ) {
+      var collection_uid = e.detail.uid;
 
-		usersRef = this.$.firebaseLogin.ref.child( 'users' ).child( this.user.uid ).child( 'favorites' );
+      if ( this.lqFavorites && this.lqFavorites.hasOwnProperty( collection_uid ) ) {
+        // Remove the selected collection from the user's favorites if already present in the favorites
+        lqMain.$.lqUserFavorites.query.child( collection_uid ).remove();
+      }
+      else {
+        // Otherwise add the collection to the user's favorites
+        lqMain.$.lqUserFavorites.query.child( collection_uid ).set( true );
+      }
 
-		collection_uid = e.detail.uid;
-		favorites     = this.lqUser.favorites ? this.lqUser.favorites : [];
-		fav_index      = favorites.length > 0 ? this.lqUser.favorites.indexOf( collection_uid) : -1;
+      lqHome.refreshFilter();
+    },
 
-		if ( this.lqUser.favorites && fav_index >= 0 ) {
-			// remove from favorite
-			favorites.splice( fav_index, 1 );
-		}
-		else {
-			// add to favorite
-			favorites.push( collection_uid );
-		}
+    _createCollection: function( collection ) {
+      this.entryAnimation = 'slide-from-left-animation';
+      this.exitAnimation  = 'slide-right-animation';
 
-		usersRef.set( favorites );
-		// lqHome.refreshFilter();
-		// lqHome.collectionsSelected = [];
-		lqHome.prepareCollections();
-	},
+      if ( collection.name ) {
+        this.$.lqCollections.add({
+          name:        collection.name,
+          status:      collection.status,
+          image:       collection.image,
+          description: collection.description,
+          score:       0
+        });
 
-	_createCollection: function( collection ) {
-		this.entryAnimation = 'slide-from-left-animation';
-		this.exitAnimation  = 'slide-right-animation';
+        page( '/home' );
+        this.fireToast( 'New collection added into the database.' );
+      }
+      else {
+        this.fireToast( 'You must select a collection name and status first.' );
+      }
 
-		if ( collection.name && collection.status ) {
-			this.$.lqCollections.add({
-				name: collection.name,
-				status: collection.status
-			});
+    },
 
-			page( '/home' );
-			this.fireToast( 'New collection added into the database.' );
-		}
-		else {
-			this.fireToast( 'You must select a collection name and status first.' );
-		}
+    _goBack: function() {
+      this.entryAnimation = 'slide-from-left-animation';
+      this.exitAnimation  = 'slide-right-animation';
 
-	},
+      page( '/home' );
+    },
 
-	_goBack: function() {
-		this.entryAnimation = 'slide-from-left-animation';
-		this.exitAnimation  = 'slide-right-animation';
+    _logOut: function() {
+      this.userLocation        = '';
+      this.collectionsLocation = '';
 
-		page( '/home' );
-	},
+      this.$.firebaseLogin.logout();
+    },
 
-	_logOut: function() {
-		this.userLocation        = '';
-		this.collectionsLocation = '';
+    userLoggedOut: function() {
+      this.entryAnimation      = 'slide-from-left-animation';
+      this.exitAnimation       = 'slide-right-animation';
+      this.userLocation        = '';
+      this.collLocation        = '';
+      this.collectionsLocation = '';
 
-		this.$.firebaseLogin.logout();
-	},
+      page.redirect( '/login' );
+      this.fireToast( 'You are now logged out.' );
+    },
 
-	userLoggedOut: function() {
-		this.entryAnimation      = 'slide-from-left-animation';
-		this.exitAnimation       = 'slide-right-animation';
-		this.userLocation        = '';
-		this.collLocation        = '';
-		this.collectionsLocation = '';
+    passwordReset: function() {
+      this.resetSpinners();
+      lqMain.fireToast( 'Your new password has been sent to your email address.' );
+    },
 
-		page.redirect( '/login' );
-		this.fireToast( 'You are now logged out.' );
-	},
-
-	passwordReset: function() {
-		this.resetSpinners();
-		lqMain.fireToast( 'Your new password has been sent to your email address.' );
-	},
-
-	firebaseError: function( error, message ) {
-		this.resetSpinners();
-		lqMain.fireToast( message );
-	}
-});
-</script>
+    firebaseError: function( error, message ) {
+      this.resetSpinners();
+      lqMain.fireToast( message );
+    }
+  });
+  </script>
 </dom-module>

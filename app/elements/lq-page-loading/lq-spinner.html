@@ -2,118 +2,115 @@
 @license
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
-
 <dom-module id="lq-spinner">
-<template>
-	<style>
-	:host {
-		display: none;
-		padding: 50px;
-		text-align: center;
-		background-color: white;
-		border-radius: 50%;
-		margin-left: auto;
-		margin-right: auto;
+  <template>
+    <style>
+    :host {
+      display: none;
+      padding: 50px;
+      text-align: center;
+      background-color: white;
+      border-radius: 50%;
+      margin-left: auto;
+      margin-right: auto;
 
-		@apply(--shadow-elevation-16dp);
-	}
-	</style>
+      @apply(--shadow-elevation-16dp);
+    }
+    </style>
 
-	<paper-spinner id="spinner" active></paper-spinner>
+    <paper-spinner id="spinner" active></paper-spinner>
 
-</template>
+  </template>
 
-<script>
-Polymer({
-	is: 'lq-spinner',
+  <script>
+    Polymer({
+      is: 'lq-spinner',
 
-	behaviors: [
-		Polymer.NeonAnimationRunnerBehavior
-	],
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
 
-	properties: {
-		active: {
-			type: Boolean,
-			value: false,
-			reflectToAttribute: true,
-			observer: '_activateChanged'
-		},
+      properties: {
+        active: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true,
+          observer: '_activateChanged'
+        },
 
-		busy: {
-			type: Boolean,
-			value: false
-		},
+        busy: {
+          type: Boolean,
+          value: false
+        },
 
-		queue: {
-			type: Number,
-			value: 0
-		},
+        queue: {
+          type: Number,
+          value: 0
+        },
 
-		animationConfig: {
-			type: Object,
-			value: function() {
-				return {
-					'entry': {
-						name: 'scale-up-animation',
-						node: this
-					},
-					'exit': {
-						name: 'scale-down-animation',
-						node: this
-					}
-				};
-			}
-		}
-	},
+        animationConfig: {
+          type: Object,
+          value: function() {
+            return {
+              'entry': {
+                name: 'scale-up-animation',
+                node: this
+              },
+              'exit': {
+                name: 'scale-down-animation',
+                node: this
+              }
+            };
+          }
+        }
+      },
 
-	listeners: {
-		'neon-animation-finish': '_onAnimationFinish'
-	},
+      listeners: {
+        'neon-animation-finish': '_onAnimationFinish'
+      },
 
-	_activateChanged: function( e ) {
-		if ( this.queue === undefined ) {
-			return;
-		}
+      _activateChanged: function( e ) {
+        if ( this.queue === undefined ) {
+          return;
+        }
 
-		this.queue = this.queue + 1;
+        this.queue = this.queue + 1;
 
-		this.async( function() {
-			this.analizeRequest( e );
-		}, 250 );
-	},
+        this.async( function() {
+          this.analizeRequest( e );
+        }, 250 );
+      },
 
-	analizeRequest: function() {
-		this.queue = this.queue - 1;
+      analizeRequest: function() {
+        this.queue = this.queue - 1;
 
-		if ( this.queue > 0 ) {
-			return;
-		}
+        if ( this.queue > 0 ) {
+          return;
+        }
 
-		// If the status is still the same, exit
-		if ( this.style.display === 'block' && this.active ) {
-			return;
-		}
-		if ( this.style.display === 'none' && ! this.active ) {
-			return;
-		}
+        // If the status is still the same, exit
+        if ( this.style.display === 'block' && this.active ) {
+          return;
+        }
+        if ( this.style.display === 'none' && ! this.active ) {
+          return;
+        }
 
-		if ( this.active ) {
-			this.style.display = 'block';
-			this.playAnimation( 'entry' );
-		}
-		else {
-			this.playAnimation( 'exit' );
-		}
-	},
+        if ( this.active ) {
+          this.style.display = 'block';
+          this.playAnimation( 'entry' );
+        }
+        else {
+          this.playAnimation( 'exit' );
+        }
+      },
 
-	_onAnimationFinish: function() {
-		if ( ! this.active ) {
-			this.style.display = 'none';
-		}
-	}
+      _onAnimationFinish: function() {
+        if ( ! this.active ) {
+          this.style.display = 'none';
+        }
+      }
 
-});
-
-</script>
-
+    });
+  </script>
 </dom-module>

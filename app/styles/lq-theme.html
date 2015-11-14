@@ -2,132 +2,131 @@
 @license
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
-
 <dom-module id="lq-shared-styles">
-<template>
-	<style>
-	/* General styles */
-	neon-animated-pages {
-		display: block;
-		height: 100%;
-	}
-	paper-scroll-header-panel {
-		height: 100%;
-		display: block;
-	}
-	paper-toolbar {
-		background-color: var(--lq-primary-0);
-		height: 160px;
-	}
-	paper-toolbar.tall .title {
-		font-size: 32px;
-		line-height: 40px;
-		text-align: center;
-		margin-left: 0;
-	}
+  <template>
+    <style>
+    /* General styles */
+    neon-animated-pages {
+      display: block;
+      height: 100%;
+    }
+    paper-scroll-header-panel {
+      height: 100%;
+      display: block;
+    }
+    paper-toolbar {
+      background-color: var(--lq-primary-0);
+      height: 160px;
+    }
+    paper-toolbar.tall .title {
+      font-size: 32px;
+      line-height: 40px;
+      text-align: center;
+      margin-left: 0;
+    }
 
-	.horizontal-section-container {
-		@apply(--layout-horizontal);
-		@apply(--layout-center-justified);
-		@apply(--layout-wrap);
-	}
-	.vertical-section-container {
-		@apply(--layout-vertical);
-		@apply(--layout-center-justified);
-		@apply(--layout-wrap);
-	}
-	.horizontal-section {
-		background-color: white;
-		padding: 24px;
-		margin-bottom: 24px;
-		min-width: 200px;
+    .horizontal-section-container {
+      @apply(--layout-horizontal);
+      @apply(--layout-center-justified);
+      @apply(--layout-wrap);
+    }
+    .vertical-section-container {
+      @apply(--layout-vertical);
+      @apply(--layout-center-justified);
+      @apply(--layout-wrap);
+    }
+    .horizontal-section {
+      background-color: white;
+      padding: 24px;
+      margin-bottom: 24px;
+      min-width: 200px;
 
-		@apply(--shadow-elevation-2dp);
-	}
-	.vertical-section {
-		background-color: white;
-		padding: 24px;
+      @apply(--shadow-elevation-2dp);
+    }
+    .vertical-section {
+      background-color: white;
+      padding: 24px;
 
-		@apply(--shadow-elevation-2dp);
-	}
-	.flex-section {
-		@apply(--layout-flex);
-	}
+      @apply(--shadow-elevation-2dp);
+    }
+    .flex-section {
+      @apply(--layout-flex);
+    }
 
-	paper-button.green {
-		color: var(--paper-green-500);
-		--paper-button-flat-focus-color: var(--paper-green-50);
+    paper-button.green {
+      color: var(--paper-green-500);
+      --paper-button-flat-focus-color: var(--paper-green-50);
 
-	}
+    }
 
-	paper-button.orange {
-		color: var(--paper-orange-300);
-		--paper-button-flat-focus-color: var(--paper-orange-50);
-	}
+    paper-button.orange {
+      color: var(--paper-orange-300);
+      --paper-button-flat-focus-color: var(--paper-orange-50);
+    }
 
-	paper-button.red {
-		color: var(--paper-red-300);
-		--paper-button-flat-focus-color: var(--paper-red-50);
-	}
+    paper-button.red {
+      color: var(--paper-red-300);
+      --paper-button-flat-focus-color: var(--paper-red-50);
+    }
 
-	/* Material Design Adaptive Breakpoints */
-	/*
-	  Below you'll find CSS media queries based on the breakpoint guidance
-	  published by the Material Design team. You can choose to use, customise
-	  or remove these breakpoints based on your needs.
+    /* Material Design Adaptive Breakpoints */
+    /*
+      Below you'll find CSS media queries based on the breakpoint guidance
+      published by the Material Design team. You can choose to use, customise
+      or remove these breakpoints based on your needs.
 
-	  http://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-breakpoints
-	 */
-	 @media (max-width: 639px) {
-		paper-toast {
-			left: 0;
-			right: 0;
-			bottom: 0;
-			margin: 0;
-			height: auto;
-			border-radius: 0;
-			padding: 20px;
-		}
+      http://www.google.com/design/spec/layout/adaptive-ui.html#adaptive-ui-breakpoints
+     */
+     @media (max-width: 639px) {
+      paper-toast {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        height: auto;
+        border-radius: 0;
+        padding: 20px;
+      }
 
-		paper-toolbar.tall .title {
-			font-size: 21px;
-			line-height: 40px;
-		}
-	}
+      paper-toolbar.tall .title {
+        font-size: 21px;
+        line-height: 40px;
+      }
+    }
 
-	/* mobile-small */
-	@media all and (min-width: 0) and (max-width: 360px) and (orientation: portrait) { }
-	/* mobile-large */
-	@media all and (min-width: 361px) and (orientation: portrait) { }
-	/* mobile-small-landscape */
-	@media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) { }
-	/* mobile-large-landscape */
-	@media all and (min-width: 481px) and (orientation: landscape) { }
-	/* tablet-small-landscape */
-	@media all and (min-width: 600px) and (max-width: 960px) and (orientation: landscape) { }
-	/* tablet-large-landscape */
-	@media all and (min-width: 961px) and (orientation: landscape) { }
-	/* tablet-small */
-	@media all and (min-width: 600px) and (orientation: portrait) { }
-	/* tablet-large */
-	@media all and (min-width: 601px) and (max-width: 840px) and (orientation : portrait) { }
-	/* desktop-x-small-landscape */
-	@media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) { }
-	/* desktop-x-small */
-	@media all and (min-width: 0) and (max-width: 480px) and (max-aspect-ratio: 4/3) { }
-	/* desktop-small-landscape */
-	@media all and (min-width: 481px) and (max-width: 840px) and (orientation: landscape) { }
-	/* desktop-small */
-	@media all and (min-width: 481px) and (max-width: 840px) and (max-aspect-ratio: 4/3) { }
-	/* desktop-medium-landscape */
-	@media all and (min-width: 841px) and (max-width: 1280px) and (orientation: landscape) { }
-	/* desktop-medium */
-	@media all and (min-width: 841px) and (max-width: 1280px) and (max-aspect-ratio: 4/3) { }
-	/* desktop-large */
-	@media all and (min-width: 1281px) and (max-width: 1600px) { }
-	/* desktop-xlarge */
-	@media all and (min-width: 1601px) and (max-width: 1920px) { }
+    /* mobile-small */
+    @media all and (min-width: 0) and (max-width: 360px) and (orientation: portrait) { }
+    /* mobile-large */
+    @media all and (min-width: 361px) and (orientation: portrait) { }
+    /* mobile-small-landscape */
+    @media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) { }
+    /* mobile-large-landscape */
+    @media all and (min-width: 481px) and (orientation: landscape) { }
+    /* tablet-small-landscape */
+    @media all and (min-width: 600px) and (max-width: 960px) and (orientation: landscape) { }
+    /* tablet-large-landscape */
+    @media all and (min-width: 961px) and (orientation: landscape) { }
+    /* tablet-small */
+    @media all and (min-width: 600px) and (orientation: portrait) { }
+    /* tablet-large */
+    @media all and (min-width: 601px) and (max-width: 840px) and (orientation : portrait) { }
+    /* desktop-x-small-landscape */
+    @media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) { }
+    /* desktop-x-small */
+    @media all and (min-width: 0) and (max-width: 480px) and (max-aspect-ratio: 4/3) { }
+    /* desktop-small-landscape */
+    @media all and (min-width: 481px) and (max-width: 840px) and (orientation: landscape) { }
+    /* desktop-small */
+    @media all and (min-width: 481px) and (max-width: 840px) and (max-aspect-ratio: 4/3) { }
+    /* desktop-medium-landscape */
+    @media all and (min-width: 841px) and (max-width: 1280px) and (orientation: landscape) { }
+    /* desktop-medium */
+    @media all and (min-width: 841px) and (max-width: 1280px) and (max-aspect-ratio: 4/3) { }
+    /* desktop-large */
+    @media all and (min-width: 1281px) and (max-width: 1600px) { }
+    /* desktop-xlarge */
+    @media all and (min-width: 1601px) and (max-width: 1920px) { }
 
-	</style>
-</template>
+    </style>
+  </template>
 </dom-module>

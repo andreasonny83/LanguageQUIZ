@@ -6,157 +6,157 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 <link rel="import" href="../lq-card/lq-card.html">
 
 <dom-module id="lq-tile">
-<template>
-	<style>
-	:host {
-		display: block;
-		opacity: 0;
-		margin: 12px;
-		transition: all linear .4s;
+	<template>
+		<style>
+		:host {
+			display: block;
+			opacity: 0;
+			margin: 12px;
+			transition: all linear .4s;
 
-		@apply(--lq-tile);
-	}
-
-	:host([loading]) {
-		@apply(--layout-horizontal);
-		@apply(--layout-center);
-		@apply(--layout-center-justified);
-		@apply(--layout-flex-auto);
-	}
-
-	lq-card {
-		width: 100%;
-		--paper-card-header-color: var(--paper-pink-500);
-	}
-
-	::content .description {
-		height: 97px;
-		overflow: hidden;
-	}
-
-	.card-actions {
-		display: flex;
-	}
-
-	paper-icon-button[favorite] {
-		color: var(--paper-red-500);
-
-		--paper-icon-button-ink-color: var(--paper-red-500);
-	}
-
-	paper-icon-button.red:hover {
-		background: var(--paper-red-50);
-		border-radius: 50%;
-	}
-
-	iron-image {
-		@apply(--layout-flex);
-	}
-	</style>
-
-	<template is="dom-if" if="[[loading]]">
-		<paper-spinner active$="[[active]]"></paper-spinner>
-	</template>
-
-	<template is="dom-if" if="[[!loading]]">
-		<lq-card heading="[[title]]" image="[[image]]" placeholder="[[placeholder]]" sizing="[[sizing]]" fade$="[[fade]]">
-			<div class="card-content">
-				<content select=".description"></content>
-			</div>
-			<div class="card-actions">
-				<paper-button id="edit" on-tap="editTap">Edit</paper-button>
-				<div class="flex"></div>
-				<paper-icon-button id="favorite" on-tap="favoriteTap" favorite$="{{userFavorite}}" icon="favorite" title="favorite"></paper-icon-button>
-			</div>
-		</lq-card>
-	</template>
-</template>
-
-<script>
-Polymer({
-	is: 'lq-tile',
-
-	properties: {
-		uid: {
-			type: String,
-			reflectToAttribute: true
-		},
-
-		loading: {
-			type: Boolean,
-			value: false,
-			reflectToAttribute: true
-		},
-
-		small: {
-			type: Boolean,
-			value: false,
-			reflectToAttribute: true
-		},
-
-		large: {
-			type: Boolean,
-			value: false,
-			reflectToAttribute: true
-		},
-
-		image: {
-			type: String,
-			value: 'images/sample.jpg',
-		},
-
-		animationConfig: {
-			value: function() {
-				return {
-					'entry': [{
-						name: 'fade-in-animation',
-						timing: {
-							duration: 800
-						},
-						node: this
-					},
-					{
-						name: 'slide-down-animation',
-						timing: {
-							duration: 250
-						},
-						node: this
-					}]
-				};
-			}
+			@apply(--lq-tile);
 		}
-	},
 
-	behaviors: [
-		Polymer.NeonAnimationRunnerBehavior
-	],
+		:host([loading]) {
+			@apply(--layout-horizontal);
+			@apply(--layout-center);
+			@apply(--layout-center-justified);
+			@apply(--layout-flex-auto);
+		}
 
-	listeners: {
-		'neon-animation-finish': '_onNeonAnimationFinish'
-	},
+		lq-card {
+			width: 100%;
+			--paper-card-header-color: var(--paper-pink-500);
+		}
 
-	attached: function() {
-		this.async( function() {
-			this.show();
-		}, 250 );
+		::content .description {
+			height: 97px;
+			overflow: hidden;
+		}
 
-	},
+		.card-actions {
+			display: flex;
+		}
 
-	editTap: function() {
-		this.fire( 'edit-collection', {uid: this.uid});
-	},
+		paper-icon-button[favorite] {
+			color: var(--paper-red-500);
 
-	favoriteTap: function() {
-		this.fire( 'toggle-favorite', {uid: this.uid});
-	},
+			--paper-icon-button-ink-color: var(--paper-red-500);
+		}
 
-	show: function() {
-		this.playAnimation( 'entry' );
-	},
+		paper-icon-button.red:hover {
+			background: var(--paper-red-50);
+			border-radius: 50%;
+		}
 
-	_onNeonAnimationFinish: function() {
-		this.style.opacity = 1;
-	}
-});
-</script>
+		iron-image {
+			@apply(--layout-flex);
+		}
+		</style>
+
+		<template is="dom-if" if="[[loading]]">
+			<paper-spinner active$="[[active]]"></paper-spinner>
+		</template>
+
+		<template is="dom-if" if="[[!loading]]">
+			<lq-card heading="[[title]]" image="[[image]]" placeholder="[[placeholder]]" sizing="[[sizing]]" fade$="[[fade]]">
+				<div class="card-content">
+					<content select=".description"></content>
+				</div>
+				<div class="card-actions">
+					<paper-button id="edit" on-tap="editTap">Edit</paper-button>
+					<div class="flex"></div>
+					<paper-icon-button id="favorite" on-tap="favoriteTap" favorite$="[[userFavorite]]" icon="favorite" title="favorite"></paper-icon-button>
+				</div>
+			</lq-card>
+		</template>
+	</template>
+
+	<script>
+	Polymer({
+		is: 'lq-tile',
+
+		properties: {
+			uid: {
+				type: String,
+				reflectToAttribute: true
+			},
+
+			loading: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true
+			},
+
+			small: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true
+			},
+
+			large: {
+				type: Boolean,
+				value: false,
+				reflectToAttribute: true
+			},
+
+			image: {
+				type: String,
+				value: 'images/sample.jpg',
+			},
+
+			animationConfig: {
+				value: function() {
+					return {
+						'entry': [{
+							name: 'fade-in-animation',
+							timing: {
+								duration: 800
+							},
+							node: this
+						},
+						{
+							name: 'slide-down-animation',
+							timing: {
+								duration: 250
+							},
+							node: this
+						}]
+					};
+				}
+			}
+		},
+
+		behaviors: [
+			Polymer.NeonAnimationRunnerBehavior
+		],
+
+		listeners: {
+			'neon-animation-finish': '_onNeonAnimationFinish'
+		},
+
+		attached: function() {
+			this.async( function() {
+				this.show();
+			}, 250 );
+
+		},
+
+		editTap: function() {
+			this.fire( 'edit-collection', {uid: this.uid});
+		},
+
+		favoriteTap: function() {
+			this.fire( 'toggle-favorite', {uid: this.uid});
+		},
+
+		show: function() {
+			this.playAnimation( 'entry' );
+		},
+
+		_onNeonAnimationFinish: function() {
+			this.style.opacity = 1;
+		}
+	});
+	</script>
 </dom-module>

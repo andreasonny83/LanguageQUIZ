@@ -2,55 +2,56 @@
 @license
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
+  <script src="../bower_components/page/page.js"></script>
 
-<script src="../bower_components/page/page.js"></script>
-<script>
-window.addEventListener('WebComponentsReady', function() {
+  <script>
+    window.addEventListener('WebComponentsReady', function() {
 
-	// Middleware
-	function scrollToTop( ctx, next ) {
-		lqApp.scrollPageToTop();
-		next();
-	}
+      // Middleware
+      function scrollToTop( ctx, next ) {
+        lqApp.scrollPageToTop();
+        next();
+      }
 
-	page( '/', scrollToTop, function () {
-		lqMain.selected = 0;
-		page.redirect( '/login' );
-	});
+      page( '/', scrollToTop, function () {
+        lqMain.selected = 0;
+        page.redirect( '/login' );
+      });
 
-	page( '/login', function () {
-		lqMain.selected = 0;
-		lqLogin.init();
-	});
+      page( '/login', function () {
+        lqMain.selected = 0;
+        lqLogin.init();
+      });
 
-	page( '/home', scrollToTop, function () {
-		lqMain.selected = 1;
-	});
+      page( '/home', scrollToTop, function () {
+        lqMain.selected = 1;
+      });
 
-	page( '/profile', function () {
-		lqMain.selected = 2;
-		lqUserProfile.querySelector( '#mainContainer' ).scrollTop = 0;
-		lqUserProfile.reset();
-	});
+      page( '/profile', function () {
+        lqMain.selected = 2;
+        lqUserProfile.querySelector( '#mainContainer' ).scrollTop = 0;
+        lqUserProfile.reset();
+      });
 
-	page( '/new-collection', function () {
-		lqMain.selected = 3;
-		lqUserCollection.querySelector( '#mainContainer' ).scrollTop = 0;
-	});
+      page( '/new-collection', function () {
+        lqMain.selected = 3;
+        lqUserCollection.init();
+        lqUserCollection.querySelector( '#mainContainer' ).scrollTop = 0;
+      });
 
-	page( '/collections/:uid', function ( uid ) {
-		lqMain.selected = 4;
-		lqCollectionEdit.querySelector( '#mainContainer' ).scrollTop = 0;
-		lqCollectionEdit.init( uid );
-	});
+      page( '/collections/:uid', function ( uid ) {
+        lqMain.selected = 4;
+        lqCollectionEdit.querySelector( '#mainContainer' ).scrollTop = 0;
+        lqCollectionEdit.init( uid );
+      });
 
-	page( '*', scrollToTop, function () {
-		page.redirect( '/login' );
-	});
+      page( '*', scrollToTop, function () {
+        page.redirect( '/login' );
+      });
 
-	page({
-		hashbang:true
-	});
+      page({
+        hashbang:true
+      });
 
-});
-</script>
+    });
+  </script>

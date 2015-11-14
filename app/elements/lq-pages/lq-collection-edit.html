@@ -2,97 +2,96 @@
 @license
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
-
 <dom-module id="lq-collection-edit">
-<template>
-	<style include="lq-shared-styles">
-	:host {
-		display: block;
-		height: 100%;
-	}
+  <template>
+    <style include="lq-shared-styles">
+    :host {
+      display: block;
+      height: 100%;
+    }
 
-	.content {
-		max-width: 1400px;
-		margin: 0 auto;
-	}
+    .content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
 
-	lq-card {
-		width: 60%;
-		margin-top: 30px;
-		margin-bottom: 30px;
-	}
+    lq-card {
+      width: 60%;
+      margin-top: 30px;
+      margin-bottom: 30px;
+    }
 
-	paper-fab.green {
-		--paper-fab-background: #82CA5F;
-	}
-	</style>
+    paper-fab.green {
+      --paper-fab-background: #82CA5F;
+    }
+    </style>
 
-	<!-- Home -->
-	<paper-scroll-header-panel condenses header-height="160" condensed-header-height="128">
+    <!-- Home -->
+    <paper-scroll-header-panel condenses header-height="160" condensed-header-height="128">
 
-		<!-- Main Toolbar -->
-		<paper-toolbar class="tall">
+      <!-- Main Toolbar -->
+      <paper-toolbar class="tall">
 
-			<paper-icon-button on-tap="_goBack" icon="arrow-back"></paper-icon-button>
-			<div class="title">The LanguageQUIZ</div>
+        <paper-icon-button on-tap="_goBack" icon="arrow-back"></paper-icon-button>
+        <div class="title">The LanguageQUIZ</div>
 
-		</paper-toolbar>
+      </paper-toolbar>
 
-		<!-- Main Content -->
-		<div class="content">
+      <!-- Main Content -->
+      <div class="content">
 
-			<div class="horizontal-section-container">
-				<h2><span>[[collection.name]]</span></h2>
-			</div>
+        <div class="horizontal-section-container">
+          <h2><span>[[collection.name]]</span></h2>
+        </div>
 
-			<div class="horizontal-section-container">
-				<lq-card heading="Edit Collection">
-					<div class="card-content">
-						<paper-input id="coll_name" label="Collection Name*" value="{{collection.name}}"></paper-input>
-						<paper-dropdown-menu id="coll_status" label="Collection status*" selected-item-label="{{collection.status}}">
-							<paper-menu class="dropdown-content">
-								<paper-item>Public collection</paper-item>
-								<paper-item>Private Collection</paper-item>
-							</paper-menu>
-						</paper-dropdown-menu>
-					</div>
-				</lq-card>
-			</div>
+        <div class="horizontal-section-container">
+          <lq-card heading="Edit Collection">
+            <div class="card-content">
+              <paper-input id="coll_name" label="Collection Name*" value="{{collection.name}}"></paper-input>
+              <paper-dropdown-menu id="coll_status" label="Collection status*" selected-item-label="{{collection.status}}">
+                <paper-menu class="dropdown-content">
+                  <paper-item>Public collection</paper-item>
+                  <paper-item>Private Collection</paper-item>
+                </paper-menu>
+              </paper-dropdown-menu>
+            </div>
+          </lq-card>
+        </div>
 
-			<div class="horizontal-section-container">
-				<paper-fab icon="done" class="green"></paper-fab>
-			</div>
+        <div class="horizontal-section-container">
+          <paper-fab icon="done" class="green"></paper-fab>
+        </div>
 
-		<!-- content -->
-		</div>
+      <!-- content -->
+      </div>
 
-	</paper-scroll-header-panel>
-</template>
+    </paper-scroll-header-panel>
+  </template>
 
-<script>
-Polymer({
-	is: 'lq-collection-edit',
+  <script>
+    Polymer({
+      is: 'lq-collection-edit',
 
-	properties: {
-		collection: {
-			type: Object,
-			value: function() {
-				return [];
-			}
-		}
+      properties: {
+        collection: {
+          type: Object,
+          value: function() {
+            return [];
+          }
+        }
 
-	},
+      },
 
-	init: function( uid ) {
-		lqMain.collLocation = lqMain.apiDir + uid.path;
-		// this.collection = {
-		// };
-	},
+      init: function( uid ) {
+        lqMain.collLocation = lqMain.apiDir + uid.path;
+        // this.collection = {
+        // };
+      },
 
-	_goBack: function() {
-		this.fire( 'go-back' );
-	}
+      _goBack: function() {
+        this.fire( 'go-back' );
+      }
 
-});
-</script>
+    });
+  </script>
 </dom-module>

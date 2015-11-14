@@ -2,69 +2,66 @@
 @license
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
-
 <link rel="import" href="lq-spinner.html">
 
 <dom-module id="lq-page-loading">
-<template>
-	<style>
-	:host {
-		visibility: hidden;
-		position: fixed;
-		left: 0;
-		top: 0;
-		height: 100%;
-		width: 100%;
-		opacity: 0;
-		background-color: rgba(0,0,0,0.3);
-		z-index: 9999;
+  <template>
+    <style>
+    :host {
+      visibility: hidden;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      opacity: 0;
+      background-color: rgba(0,0,0,0.3);
+      z-index: 9999;
 
-		-webkit-transition: all 1s;
-		-webkit-transition-delay: .1s;
-		transition: all 1s;
-		transition-delay: .1s;
-	}
-	:host[active] {
-		visibility: visible;
-		opacity: 1;
-	}
-	.spinner-box-container {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		margin-left: -50px;
-		margin-top: -50px;
-	}
-	</style>
+      -webkit-transition: all 1s;
+      -webkit-transition-delay: .1s;
+      transition: all 1s;
+      transition-delay: .1s;
+    }
+    :host[active] {
+      visibility: visible;
+      opacity: 1;
+    }
+    .spinner-box-container {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin-left: -50px;
+      margin-top: -50px;
+    }
+    </style>
 
-	<div class="spinner-box-container">
-		<lq-spinner id="spinner"></lq-spinner>
-	</div>
-</template>
+    <div class="spinner-box-container">
+      <lq-spinner id="spinner"></lq-spinner>
+    </div>
+  </template>
 
-<script>
-Polymer({
-	is: 'lq-page-loading',
+  <script>
+    Polymer({
+      is: 'lq-page-loading',
 
-	properties: {
-		active: {
-			type: Boolean,
-			value: false,
-			reflectToAttribute: true,
-			observer: '_activateChanged'
-		}
-	},
+      properties: {
+        active: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true,
+          observer: '_activateChanged'
+        }
+      },
 
-	_activateChanged: function( e ) {
-		if ( e ) {
-			this.$.spinner.setAttribute( 'active', true );
-		}
-		else {
-			this.$.spinner.removeAttribute( 'active' );
-		}
-	}
-});
-
-</script>
-
+      _activateChanged: function( e ) {
+        if ( e ) {
+          this.$.spinner.setAttribute( 'active', true );
+        }
+        else {
+          this.$.spinner.removeAttribute( 'active' );
+        }
+      }
+    });
+  </script>
 </dom-module>
