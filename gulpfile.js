@@ -10,17 +10,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 'use strict';
 
 // Include Gulp & Tools We'll Use
-var gulp = require('gulp');
-var $ = require('gulp-load-plugins')();
-var del = require('del');
-var runSequence = require('run-sequence');
-var browserSync = require('browser-sync');
-var reload = browserSync.reload;
-var merge = require('merge-stream');
-var path = require('path');
-var fs = require('fs');
-var glob = require('glob');
-var historyApiFallback = require('connect-history-api-fallback');
+var gulp = require('gulp'),
+    $ = require('gulp-load-plugins')(),
+    del = require('del'),
+    runSequence = require('run-sequence'),
+    browserSync = require('browser-sync'),
+    reload = browserSync.reload,
+    merge = require('merge-stream'),
+    path = require('path'),
+    fs = require('fs'),
+    glob = require('glob'),
+    ftp = require('vinyl-ftp'),
+    minimist = require('minimist'),
+    gutil = require('gulp-util'),
+    historyApiFallback = require('connect-history-api-fallback'),
+    args = minimist(process.argv.slice(2));
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -91,16 +95,16 @@ gulp.task('copy', function () {
   }).pipe(gulp.dest('dist'));
 
   var bower = gulp.src([
-    'bower_components/**/*'
+    'app/bower_components/**/*'
   ]).pipe(gulp.dest('dist/bower_components'));
 
   var elements = gulp.src(['app/elements/**/*.html'])
     .pipe(gulp.dest('dist/elements'));
 
-  var swBootstrap = gulp.src(['bower_components/platinum-sw/bootstrap/*.js'])
+  var swBootstrap = gulp.src(['app/bower_components/platinum-sw/bootstrap/*.js'])
     .pipe(gulp.dest('dist/elements/bootstrap'));
 
-  var swToolbox = gulp.src(['bower_components/sw-toolbox/*.js'])
+  var swToolbox = gulp.src(['app/bower_components/sw-toolbox/*.js'])
     .pipe(gulp.dest('dist/sw-toolbox'));
 
   var vulcanized = gulp.src(['app/elements/elements.html'])
@@ -167,7 +171,7 @@ gulp.task('precache', function (callback) {
     if (error) {
       callback(error);
     } else {
-      files.push('index.html', './', 'bower_components/webcomponentsjs/webcomponents-lite.min.js');
+      files.push('index.html', './', 'app/bower_components/webcomponentsjs/webcomponents-lite.min.js');
       var filePath = path.join(dir, 'precache.json');
       fs.writeFile(filePath, JSON.stringify(files), callback);
     }
@@ -241,6 +245,49 @@ gulp.task('default', ['clean'], function (cb) {
     'vulcanize',
     cb);
     // Note: add , 'precache' , after 'vulcanize', if your are going to use Service Worker
+});
+
+/**
+ * Deploy to Live
+ *
+ * use with the followinf syntax:
+ * gulp deploy --remote www.languagequiz.io --remote_path /public_html/languagequiz/ --user username --password password
+ *
+ * where username and password are the ftp credentials
+ */
+// gulp.task('deploy', function(callback) {
+//   runSequence(
+//     'clean:build',
+//     'sass:build',
+//     'images',
+//     'templates',
+//     'usemin',
+//     'fonts',
+//     'send',
+//     callback);
+// });
+
+gulp.task('send', function( cb ) {
+  var remotePath = args.remote_path,
+      conn = ftp.create({
+      host: args.remote,
+      user: args.user,
+      password: args.password,
+      log: gutil.log
+      // parallel: 25,
+      // debug: true,
+      // idleTimeout: 200,
+      // maxConnections: 30,
+      // reload: true,
+    });
+
+  var globs = [
+      'dist/**/*'
+    ];
+
+    return gulp.src( globs, {base: './dist/', buffer: true } )
+      .pipe( conn.differentSize( remotePath ) )
+      .pipe( conn.dest( remotePath ) );
 });
 
 // Load tasks for web-component-tester

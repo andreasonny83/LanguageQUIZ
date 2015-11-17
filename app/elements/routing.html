@@ -5,53 +5,69 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
   <script src="../bower_components/page/page.js"></script>
 
   <script>
-    window.addEventListener('WebComponentsReady', function() {
+  window.addEventListener( 'AppReady', function() {
 
-      // Middleware
-      function scrollToTop( ctx, next ) {
-        lqApp.scrollPageToTop();
-        next();
+    // Middleware
+    function scrollToTop() {
+      document.querySelector( '#mainContainer' ).scrollTop = 0;
+    }
+
+    page( '/', function () {
+      window.LQ.lqMain.selected = 0;
+      page.redirect( '/login' );
+      scrollToTop();
+    });
+
+    page( '/login', function () {
+      // If the user is aleady logged in, redirect to the home page
+      if (
+        window.LQ.lqMain.$.firebaseLogin &&
+        window.LQ.lqMain.$.firebaseLogin.statusKnown &&
+        window.LQ.lqMain.$.firebaseLogin.user &&
+        window.LQ.lqMain.$.firebaseLogin.user.uid ) {
+          page( '/home' );
+      }
+      else {
+        window.LQ.lqMain.selected = 0;
+        window.LQ.lqLogin.resetFields();
       }
 
-      page( '/', scrollToTop, function () {
-        lqMain.selected = 0;
-        page.redirect( '/login' );
-      });
-
-      page( '/login', function () {
-        lqMain.selected = 0;
-        lqLogin.init();
-      });
-
-      page( '/home', scrollToTop, function () {
-        lqMain.selected = 1;
-      });
-
-      page( '/profile', function () {
-        lqMain.selected = 2;
-        lqUserProfile.querySelector( '#mainContainer' ).scrollTop = 0;
-        lqUserProfile.reset();
-      });
-
-      page( '/new-collection', function () {
-        lqMain.selected = 3;
-        lqUserCollection.init();
-        lqUserCollection.querySelector( '#mainContainer' ).scrollTop = 0;
-      });
-
-      page( '/collections/:uid', function ( uid ) {
-        lqMain.selected = 4;
-        lqCollectionEdit.querySelector( '#mainContainer' ).scrollTop = 0;
-        lqCollectionEdit.init( uid );
-      });
-
-      page( '*', scrollToTop, function () {
-        page.redirect( '/login' );
-      });
-
-      page({
-        hashbang:true
-      });
-
+      scrollToTop();
     });
+
+    page( '/home', function () {
+      window.LQ.lqMain.selected = 1;
+      window.LQ.lqHome.refreshFilter();
+      scrollToTop();
+    });
+
+    page( '/profile', function () {
+      window.LQ.lqMain.selected = 2;
+      window.LQ.lqUserProfile.querySelector( '#mainContainer' ).scrollTop = 0;
+      window.LQ.lqUserProfile.reset();
+      scrollToTop();
+    });
+
+    page( '/new-collection', function () {
+      window.LQ.lqMain.selected = 3;
+      window.LQ.lqUserCollection.init();
+      scrollToTop();
+    });
+
+    page( '/collections/:uid', function ( uid ) {
+      window.LQ.lqMain.selected = 4;
+      window.LQ.lqCollectionEdit.init( uid );
+      scrollToTop();
+    });
+
+    page( '*', function () {
+      page.redirect( '/login' );
+      scrollToTop();
+    });
+
+    page({
+      hashbang: true
+    });
+
+  });
   </script>

@@ -68,7 +68,9 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
        * global collections
        * @type {Object}
        */
-      collections: Object,
+      collections: {
+        type: Object
+      },
 
       /**
        * the selected view
@@ -105,15 +107,15 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       }
       else {
         setTimeout( function() {
-          lqMain.fireToast( message );
+          window.LQ.lqMain.fireToast( message );
         }, 1000);
       }
     },
 
     resetSpinners: function() {
-      lqLogin.set( 'spin.login', false );
-      lqLogin.set( 'spin.register', false );
-      lqLogin.set( 'spin.password_reset', false );
+      window.LQ.lqLogin.set( 'spin.login', false );
+      window.LQ.lqLogin.set( 'spin.register', false );
+      window.LQ.lqLogin.set( 'spin.password_reset', false );
     },
 
     /**
@@ -136,25 +138,28 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       this.userRegistration = true;
 
       this.regInfo = {
-        username: lqLogin.input_field.reg_name,
-        lang: lqLogin.input_field.reg_lang
+        username: window.LQ.lqLogin.input_field.reg_name,
+        lang: window.LQ.lqLogin.input_field.reg_lang
       };
 
-      lqMain.fireToast( 'You are now registerd. Logging in...' );
+      window.LQ.lqMain.fireToast( 'You are now registerd. Logging in...' );
 
-      this.$.firebaseLogin.login({email:lqLogin.input_field.reg_email_confirm, password:lqLogin.input_field.reg_password_confirm});
+      this.$.firebaseLogin.login({
+        email: window.LQ.lqLogin.input_field.reg_email_confirm,
+        password: window.LQ.lqLogin.input_field.reg_password_confirm
+      });
     },
 
     checkUserDetailChanged: function( value_a, value_b ) {
       if ( value_b.key === 'avatar' ) {
-        if ( this.lqUser.avatar === lqUserProfile.userBuffer.avatar ) {
+        if ( this.lqUser.avatar === window.LQ.lqUserProfile.userBuffer.avatar ) {
           this.fireToast( 'Your avar has been updated.' );
         }
       }
     },
 
     userAvatarChanged: function() {
-      lqUserProfile.set( 'userBuffer.avatar', this.lqUser.avatar );
+      window.LQ.lqUserProfile.set( 'userBuffer.avatar', this.lqUser.avatar );
     },
 
     userLoggedIn: function() {
@@ -173,21 +178,41 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       this.favoritesLocation   = this.apiDir + '/users/' + this.user.uid + '/favorites';
 
       page( '/home' );
-      lqLogin.resetFields();
+      window.LQ.lqLogin.resetFields();
+      window.LQ.firebaseCollections = new Firebase( this.apiDir + '/collections/' );
 
       this.fireToast( 'You are now logged in.' );
+
+      // window.LQ.firebaseCollections.on( 'value', function( snapshot ) {
+        // var data = snapshot.val();
+      // });
+
+      window.LQ.firebaseCollections.on( 'child_removed', function( oldChildSnapshot ) {
+        var data = oldChildSnapshot.val();
+        if ( data.name === window.LQ.deletingCollection ) {
+          window.LQ.lqMain.fireToast( 'Your collection has been correctly deleted.' );
+        }
+      });
     },
 
     passwordChanged: function() {
       this.resetSpinners();
       this.fireToast( 'Your new password has been saved.' );
-      lqUserProfile.userReset = {};
+      window.LQ.lqUserProfile.userReset = {};
     },
 
     emailChanged: function() {
       this.resetSpinners();
       this.fireToast( 'Your new email has been saved.' );
-      lqUserProfile.userReset = {};
+      window.LQ.lqUserProfile.userReset = {};
+    },
+
+
+    _userProfile: function() {
+      this.entryAnimation = 'slide-from-right-animation';
+      this.exitAnimation  = 'slide-left-animation';
+
+      page( '/profile' );
     },
 
     _newCollection: function() {
@@ -197,16 +222,9 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       page( '/new-collection' );
     },
 
-    _userProfile: function() {
-      this.entryAnimation = 'slide-from-right-animation';
-      this.exitAnimation  = 'slide-left-animation';
-
-      page( '/profile' );
-    },
-
     _editCollection: function( e ) {
-      lqMain.entryAnimation = 'slide-from-right-animation';
-      lqMain.exitAnimation  = 'slide-left-animation';
+      window.LQ.lqMain.entryAnimation = 'slide-from-right-animation';
+      window.LQ.lqMain.exitAnimation  = 'slide-left-animation';
 
       page.redirect( '/collections/' + e.detail.uid );
     },
@@ -221,14 +239,14 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
       if ( this.lqFavorites && this.lqFavorites.hasOwnProperty( collection_uid ) ) {
         // Remove the selected collection from the user's favorites if already present in the favorites
-        lqMain.$.lqUserFavorites.query.child( collection_uid ).remove();
+        window.LQ.lqMain.$.lqUserFavorites.query.child( collection_uid ).remove();
       }
       else {
         // Otherwise add the collection to the user's favorites
-        lqMain.$.lqUserFavorites.query.child( collection_uid ).set( true );
+        window.LQ.lqMain.$.lqUserFavorites.query.child( collection_uid ).set( true );
       }
 
-      lqHome.refreshFilter();
+      window.LQ.lqHome.refreshFilter();
     },
 
     _createCollection: function( collection ) {
@@ -250,7 +268,21 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       else {
         this.fireToast( 'You must select a collection name and status first.' );
       }
+    },
 
+    /**
+     * Delete a collection
+     *
+     * @param  [String] uid The collection uiid
+     */
+    _deleteCollection: function( uid, collection_name ) {
+      window.LQ.lqMain.entryAnimation = 'slide-from-right-animation';
+      window.LQ.lqMain.exitAnimation  = 'slide-left-animation';
+
+      window.LQ.deletingCollection = collection_name;
+      window.LQ.lqMain.$.lqCollections.query.child( uid.params.uid ).remove();
+
+      page.redirect( '/home' );
     },
 
     _goBack: function() {
@@ -280,12 +312,12 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
     passwordReset: function() {
       this.resetSpinners();
-      lqMain.fireToast( 'Your new password has been sent to your email address.' );
+      window.LQ.lqMain.fireToast( 'Your new password has been sent to your email address.' );
     },
 
     firebaseError: function( error, message ) {
       this.resetSpinners();
-      lqMain.fireToast( message );
+      window.LQ.lqMain.fireToast( message );
     }
   });
   </script>

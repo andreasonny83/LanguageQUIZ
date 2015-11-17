@@ -47,7 +47,6 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
     paper-dialog {
       background-color: #fff;
     }
-
     </style>
 
     <!-- Home -->
@@ -96,8 +95,8 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
                 Delete the current draft collection?
               </paper-dialog-scrollable>
               <div class="buttons">
-                <paper-button dialog-dismiss autofocus>Cancel</paper-button>
-                <paper-button dialog-confirm>Delete</paper-button>
+                <paper-button dialog-dismiss autofocus>No</paper-button>
+                <paper-button dialog-confirm>Yes</paper-button>
               </div>
             </paper-dialog>
 
@@ -157,7 +156,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
         if ( response.confirmed && response.confirmed === true ) {
           // User accepeted to create a new collection
-          lqMain._createCollection( this.collection );
+          window.LQ.lqMain._createCollection( this.collection );
         }
       },
 

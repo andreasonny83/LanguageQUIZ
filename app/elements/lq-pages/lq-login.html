@@ -225,19 +225,6 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         '_verifyPassword( input_field.reg_password, input_field.reg_password_confirm )'
       ],
 
-      attached: function() {
-        this.init();
-      },
-
-      init: function() {
-        this.resetFields();
-
-        // If the user is aleady logged in, redirect to the home page
-        if ( lqMain.$.firebaseLogin && lqMain.$.firebaseLogin.statusKnown && lqMain.$.firebaseLogin.user && lqMain.$.firebaseLogin.user.uid ) {
-          page( '/home' );
-        }
-      },
-
       /**
        * Reset text fields and hide text fields errors
        */
@@ -297,17 +284,17 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         this.$.login_password.validate();
 
         if ( this.$.login_email.validate() && this.$.login_password.validate() ) {
-          lqMain.$.firebaseLogin.login({email:this.input_field.email, password:this.input_field.password});
+          window.LQ.lqMain.$.firebaseLogin.login({email:this.input_field.email, password:this.input_field.password});
         }
         else {
-          lqMain.fireToast( 'Please, check the entered details and try again.' );
+          window.LQ.lqMain.fireToast( 'Please, check the entered details and try again.' );
           this.set( 'spin.login', false );
         }
       },
 
       passwordReset: function() {
         this.set( 'spin.password_reset', true );
-        lqMain.$.firebaseLogin.sendPasswordResetEmail( this.input_field.email );
+        window.LQ.lqMain.$.firebaseLogin.sendPasswordResetEmail( this.input_field.email );
       },
 
       register: function() {
@@ -322,19 +309,19 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         this.input_field.reg_lang = this.$.language.selectedItemLabel;
 
         if ( ! this.input_field.reg_lang ) {
-          lqMain.fireToast( 'Please, select a language first.' );
+          window.LQ.lqMain.fireToast( 'Please, select a language first.' );
           this.set( 'spin.register', false );
 
           return;
         }
 
         if ( this.$.reg_name.invalid || this.$.reg_email.invalid || this.$.reg_email_confirm.invalid || this.$.reg_password.invalid || this.$.reg_password_confirm.invalid ) {
-          lqMain.fireToast( 'Please, fix the wrong information and try again.' );
+          window.LQ.lqMain.fireToast( 'Please, fix the wrong information and try again.' );
           this.set( 'spin.register', false );
           return;
         }
 
-        lqMain.$.firebaseLogin.createUser( this.input_field.reg_email_confirm, this.input_field.reg_password_confirm );
+        window.LQ.lqMain.$.firebaseLogin.createUser( this.input_field.reg_email_confirm, this.input_field.reg_password_confirm );
       }
 
     });

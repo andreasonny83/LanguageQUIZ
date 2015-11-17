@@ -1,18 +1,36 @@
 /*
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 */
-( function( document ) {
+;( function( document ) {
   'use strict';
 
-  var lqApp = document.querySelector( '#lqApp' );
-
   window.addEventListener( 'WebComponentsReady', function() {
+    /**
+     * Defining a global namespace containing all the application's main elements
+     * to reuse across the app
+     *
+     * @type {Object}
+     */
+    var modules = [
+      'lqApp',
+      'lqMain',
+      'lqLogin',
+      'lqHome',
+      'lqUserProfile',
+      'lqUserCollection',
+      'lqCollectionEdit'
+    ];
+
+    window.LQ = {};
+
+    modules.forEach( function ( module_name ) {
+      window.LQ[module_name] = document.querySelector( '#' + module_name );
+    });
+
+    // Dispatch the AppReady event.
+    var event = new Event( 'AppReady' );
+    window.dispatchEvent( event );
+
     console.log( 'LanguageQUIZ is ready!' );
   });
-
-  // Scroll page to top and expand header
-  lqApp.scrollPageToTop = function() {
-    document.getElementById( 'mainContainer' ).scrollTop = 0;
-  };
-
-})(document);
+}(document));

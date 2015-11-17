@@ -15,10 +15,16 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       @apply(--lq-card);
     }
 
+    :host:hover paper-material {
+      @apply(--shadow-elevation-8dp);
+    }
+
     paper-material {
       border-radius: inherit;
       width: 100%;
       height: 100%;
+
+      @apply(--shadow-transition);
     }
 
     /* IE 10 support for HTML5 hidden attr */
