@@ -154,7 +154,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 			this.fire( 'toggle-favorite', {uid: this.uid});
 			// At the moment we're just toggling the userFavorite to alternate the favorite's icon color
 			// Should be better to have this information coming from the Firebase database instead.
-			this.userFavorite = ! this.userFavorite;
+			this.toggleAttribute('user-favorite');
 		},
 
 		show: function() {

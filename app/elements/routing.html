@@ -2,71 +2,75 @@
 @license
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 -->
-  <script src="../bower_components/page/page.js"></script>
+<script src="../bower_components/page/page.js"></script>
 
-  <script>
-  window.addEventListener( 'AppReady', function() {
+<script>
+;( function( global, document ) {
+'use strict';
 
-    // Middleware
-    function scrollToTop() {
-      document.querySelector( '#mainContainer' ).scrollTop = 0;
+global.addEventListener( 'AppReady', function() {
+
+  // Middleware
+  function scrollToTop() {
+    document.querySelector( '#mainContainer' ).scrollTop = 0;
+  }
+
+  page( '/', function () {
+    global.LQ.lqMain.selected = 0;
+    page.redirect( '/login' );
+    scrollToTop();
+  });
+
+  page( '/login', function () {
+    // If the user is aleady logged in, redirect to the home page
+    if (
+      global.LQ.lqMain.$.firebaseLogin &&
+      global.LQ.lqMain.$.firebaseLogin.statusKnown &&
+      global.LQ.lqMain.$.firebaseLogin.user &&
+      global.LQ.lqMain.$.firebaseLogin.user.uid ) {
+        page( '/home' );
+    }
+    else {
+      global.LQ.lqMain.selected = 0;
+      global.LQ.lqLogin.resetFields();
     }
 
-    page( '/', function () {
-      window.LQ.lqMain.selected = 0;
-      page.redirect( '/login' );
-      scrollToTop();
-    });
-
-    page( '/login', function () {
-      // If the user is aleady logged in, redirect to the home page
-      if (
-        window.LQ.lqMain.$.firebaseLogin &&
-        window.LQ.lqMain.$.firebaseLogin.statusKnown &&
-        window.LQ.lqMain.$.firebaseLogin.user &&
-        window.LQ.lqMain.$.firebaseLogin.user.uid ) {
-          page( '/home' );
-      }
-      else {
-        window.LQ.lqMain.selected = 0;
-        window.LQ.lqLogin.resetFields();
-      }
-
-      scrollToTop();
-    });
-
-    page( '/home', function () {
-      window.LQ.lqMain.selected = 1;
-      window.LQ.lqHome.refreshFilter();
-      scrollToTop();
-    });
-
-    page( '/profile', function () {
-      window.LQ.lqMain.selected = 2;
-      window.LQ.lqUserProfile.reset();
-      window.LQ.lqUserProfile.querySelector( '#mainContainer' ).scrollTop = 0;
-    });
-
-    page( '/new-collection', function () {
-      window.LQ.lqMain.selected = 3;
-      window.LQ.lqUserCollection.init();
-      window.LQ.lqUserCollection.querySelector( '#mainContainer' ).scrollTop = 0;
-    });
-
-    page( '/collections/:uid', function ( uid ) {
-      window.LQ.lqMain.selected = 4;
-      window.LQ.lqCollectionEdit.init( uid );
-      window.LQ.lqCollectionEdit.querySelector( '#mainContainer' ).scrollTop = 0;
-    });
-
-    page( '*', function () {
-      page.redirect( '/login' );
-      scrollToTop();
-    });
-
-    page({
-      hashbang: true
-    });
-
+    scrollToTop();
   });
-  </script>
+
+  page( '/home', function () {
+    global.LQ.lqMain.selected = 1;
+    global.LQ.lqHome.refreshFilter();
+    scrollToTop();
+  });
+
+  page( '/profile', function () {
+    global.LQ.lqMain.selected = 2;
+    global.LQ.lqUserProfile.reset();
+    global.LQ.lqUserProfile.querySelector( '#mainContainer' ).scrollTop = 0;
+  });
+
+  page( '/new-collection', function () {
+    global.LQ.lqMain.selected = 3;
+    global.LQ.lqUserCollection.init();
+    global.LQ.lqUserCollection.querySelector( '#mainContainer' ).scrollTop = 0;
+  });
+
+  page( '/collections/:uid', function ( uid ) {
+    global.LQ.lqMain.selected = 4;
+    global.LQ.lqCollectionEdit.init( uid );
+    global.LQ.lqCollectionEdit.querySelector( '#mainContainer' ).scrollTop = 0;
+  });
+
+  page( '*', function () {
+    page.redirect( '/login' );
+    scrollToTop();
+  });
+
+  page({
+    hashbang: true
+  });
+
+});
+}( typeof window !== undefined ? window : this, document ));
+</script>

@@ -101,7 +101,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
      * @param String message
      */
     fireToast: function( message ) {
-      if ( ! toast.visible ) {
+      if ( ! toast.opened ) {
         toast.text = message;
         toast.show();
       }

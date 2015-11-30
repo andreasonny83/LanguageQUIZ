@@ -1,14 +1,17 @@
 /*
 Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 */
-;( function( document ) {
+;( function( global, document ) {
   'use strict';
 
-  window.addEventListener( 'WebComponentsReady', function() {
+  /**
+   * Defining a global namespace containing all the application's main elements
+   * to reuse across the app
+   *
+   */
+  global.addEventListener( 'WebComponentsReady', function() {
+
     /**
-     * Defining a global namespace containing all the application's main elements
-     * to reuse across the app
-     *
      * @type {Object}
      */
     var modules = [
@@ -21,16 +24,17 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       'lqCollectionEdit'
     ];
 
-    window.LQ = {};
+    global.LQ = {};
 
     modules.forEach( function ( module_name ) {
-      window.LQ[module_name] = document.querySelector( '#' + module_name );
+      global.LQ[module_name] = document.querySelector( '#' + module_name );
     });
 
     // Dispatch the AppReady event.
     var event = new Event( 'AppReady' );
-    window.dispatchEvent( event );
+    global.dispatchEvent( event );
 
     console.log( 'LanguageQUIZ is ready!' );
   });
-}(document));
+
+}(typeof window === 'undefined' ? this : window, document));
