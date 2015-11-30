@@ -43,21 +43,20 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
     page( '/profile', function () {
       window.LQ.lqMain.selected = 2;
-      window.LQ.lqUserProfile.querySelector( '#mainContainer' ).scrollTop = 0;
       window.LQ.lqUserProfile.reset();
-      scrollToTop();
+      window.LQ.lqUserProfile.querySelector( '#mainContainer' ).scrollTop = 0;
     });
 
     page( '/new-collection', function () {
       window.LQ.lqMain.selected = 3;
       window.LQ.lqUserCollection.init();
-      scrollToTop();
+      window.LQ.lqUserCollection.querySelector( '#mainContainer' ).scrollTop = 0;
     });
 
     page( '/collections/:uid', function ( uid ) {
       window.LQ.lqMain.selected = 4;
       window.LQ.lqCollectionEdit.init( uid );
-      scrollToTop();
+      window.LQ.lqCollectionEdit.querySelector( '#mainContainer' ).scrollTop = 0;
     });
 
     page( '*', function () {

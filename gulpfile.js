@@ -267,7 +267,7 @@ gulp.task('default', ['clean'], function (cb) {
 //     callback);
 // });
 
-gulp.task('send', function( cb ) {
+gulp.task( 'send', function( cb ) {
   var remotePath = args.remote_path,
       conn = ftp.create({
       host: args.remote,
@@ -282,12 +282,29 @@ gulp.task('send', function( cb ) {
     });
 
   var globs = [
-      'dist/**/*'
+      'dist/bower_components/webcomponentsjs/**/*',
+      'dist/elements/**/*',
+      'dist/images/**/*',
+      'dist/scripts/**/*',
+      'dist/styles/**/*',
+      'dist/sw-toolbox/**/*',
+      'dist/*.*'
     ];
 
-    return gulp.src( globs, {base: './dist/', buffer: true } )
+    return gulp.src( globs, {base: './dist/', buffer: false } )
       .pipe( conn.differentSize( remotePath ) )
       .pipe( conn.dest( remotePath ) );
+  //
+  //   conn.rmdir( remotePath, function ( err ) {
+  //     if ( err ) {
+  //       // If the remote directory doesn't exisits, do nothing and continue with the upload
+  //       // return cb( err );
+  //     }
+  //     gulp.src(globs, { base: './dist/', buffer: false } )
+  //       .pipe( conn.newer( remotePath ) )
+  //       .pipe( conn.dest( remotePath ) );
+  // });
+  //
 });
 
 // Load tasks for web-component-tester

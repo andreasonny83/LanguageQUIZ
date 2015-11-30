@@ -122,6 +122,13 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       margin: 0 auto;
     }
 
+    lq-tile {
+      --lq-card-header-text: {
+        padding: 8px 12px;
+        background-color: rgba(255,255,255,0.5);
+      };
+    }
+
     lq-tile[small] {
       --lq-tile: {
         width: calc(33.33% - 24px);
@@ -131,10 +138,12 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         max-width: 440px;
         height: 250px;
       };
-      --lq-card-header-text: {
-        padding: 8px 12px;
-        background-color: rgba(255,255,255,0.5);
-      };
+
+      --lq-card-content: {
+        height: 97px;
+        overflow: hidden;
+      }
+
     }
 
     lq-tile[large] {
@@ -142,9 +151,25 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         width: 100%;
       };
 
-      --lq-card-header-image: {
-        width: 50%;
+      --lq-card-header: {
         height: 250px;
+        width: 50%;
+        display: inline-block;
+      };
+
+      --lq-card-header-image: {
+        width: 100%;
+        height: 250px;
+      };
+
+      --lq-card-content: {
+        display: inline-block;
+        vertical-align: top;
+        height: auto;
+      };
+
+      --lq-card-actions: {
+        margin-top: -4px;
       };
     }
 
@@ -226,7 +251,9 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
           <h2>Collection of the month</h2>
         </div>
         <div class="horizontal-section-container">
-          <lq-tile large image="http://lotus.se-mc.com/image/www-static.se-mc.com/blogs.dir/0/files/2015/07/xperia-z5-camera-hybrid-af-desktop-f6cc693928982eb8a41dc345b2e9285b.jpg?wid=5000" placeholder="[[highlight_placeholder]]" sizing="cover" fade></lq-tile>
+          <lq-tile large uid="collection-of-the-month" title="Collection of the month" placeholder="[[tile_placeholder]]">
+            <p class="description">Description</p>
+          </lq-tile>
         </div>
 
         <div class="horizontal-section-container">
@@ -236,7 +263,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
           <template id="collectionsList" is="dom-repeat" items="{{collections}}" as="collection" filter="filterCollections">
             <lq-tile small uid="[[collection.__firebaseKey__]]"
               title="[[collection.name]]" user-favorite$="[[checkFavorites(collection.__firebaseKey__)]]"
-              placeholder="[[tile_placeholder]]" sizing="cover" fade>
+              placeholder="[[tile_placeholder]]">
               <p class="description">[[collection.description]]</p>
             </lq-tile>
           </template>

@@ -38,6 +38,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
     }
 
     .header iron-image {
+      display: block;
       width: 400px;
       height: 400px;
       @apply(--lq-card-header-image);
@@ -64,10 +65,13 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
     }
 
     :host ::content .card-actions {
-      border-top: 1px solid #e8e8e8;
       padding: 5px 16px;
       position:relative;
       @apply(--lq-card-actions);
+    }
+
+    :host:hover ::content .card-actions {
+      border-top: 1px solid #e8e8e8;
     }
     </style>
 
