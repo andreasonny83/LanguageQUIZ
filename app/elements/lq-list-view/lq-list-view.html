@@ -1,0 +1,105 @@
+<!--
+@license
+Copyright (c) 2015 LanguageQUIZ. All rights reserved.
+-->
+<dom-module id="lq-list-view">
+  <template>
+    <style>
+    :host {
+      display: block;
+    }
+
+    .container {
+      background-color: #E0E0E0;
+      padding: 5px 16px;
+
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+    }
+
+    paper-item-body {
+      cursor: pointer;
+    }
+    </style>
+
+    <div class="container">
+      <paper-checkbox id="select_all">Select All</paper-checkbox>
+      <div class="flex"></div>
+      <paper-icon-button icon="add" alt="add word"></paper-icon-button>
+      <paper-icon-button icon="delete" alt="delete all"></paper-icon-button>
+    </div>
+
+    <template is="dom-repeat" items="[[data]]">
+
+      <paper-item id="[[item._id]]">
+        <paper-checkbox></paper-checkbox>
+        <paper-item-body two-line on-click="_onClick">
+          <div>[[item.word_a]]</div>
+          <div secondary>[[item.word_b]]</div>
+        </paper-item-body>
+        <paper-icon-button icon="delete" alt="delete word"></paper-icon-button>
+      </paper-item>
+
+    </template>
+
+  </template>
+
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'lq-list-view',
+
+    properties: {
+
+      data: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      },
+
+      animationConfig: {
+        type: Object,
+        value: function() {
+          return {
+            'entry': [{
+              name: 'fade-in-animation',
+              node: this.$.button
+            }],
+
+            'exit': [{
+              name: 'fade-out-animation',
+              node: this.$.button
+            }, {
+              name: 'hero-animation',
+              id: 'hero',
+              fromPage: this
+            }]
+          };
+        }
+      }
+
+    },
+
+    _onClick: function(event) {
+      var target = event.target;
+      while (target !== this && !target._templateInstance) {
+        target = target.parentNode;
+      }
+
+      // configure the page animation
+      this.sharedElements = {
+        'hero': target,
+      };
+
+      this.fire('item-click', {
+        item: target,
+      });
+    }
+
+  });
+
+</script>

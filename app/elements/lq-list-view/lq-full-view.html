@@ -1,0 +1,166 @@
+<!--
+@license
+Copyright (c) 2015 LanguageQUIZ. All rights reserved.
+-->
+<dom-module id="lq-full-view">
+
+  <style>
+
+    :host {
+      position: fixed;
+      display: none;
+      width: 50%;
+      height: 50%;
+      top: 320px;
+      padding: 16px;
+      background: white;
+      color: black;
+
+      @apply(--layout-center);
+      @apply(--shadow-elevation-16dp);
+    }
+
+    paper-button.done {
+      color: var(--paper-green-500);
+      --paper-button-flat-focus-color: var(--paper-green-50);
+
+    }
+    paper-button.done:hover {
+      background: var(--paper-green-50);
+    }
+
+    paper-button.cancel {
+      color: var(--paper-red-500);
+      --paper-button-flat-focus-color: var(--paper-red-50);
+    }
+
+    paper-button.cancel:hover {
+      background: var(--paper-red-50);
+    }
+
+  </style>
+
+  <template>
+
+    <div class="vertical-section">
+      <paper-typeahead-input max-suggestions="3" local-candidates="{{suggestions}}" value="{{searchString::input}}" placeholder="Word in English"></paper-typeahead-input>
+      <paper-typeahead-input max-suggestions="3" local-candidates="{{suggestions}}" value="{{searchString::input}}" placeholder="Word in Italian"></paper-typeahead-input>
+      <paper-input type="text" label="synonym"></paper-input>
+      <paper-input type="text" label="Taboo words"></paper-input>
+
+      <div class="horizontal-section-container">
+        <paper-button class="cancel" on-click="hide">
+          <iron-icon icon="close"></iron-icon>
+          Cancel
+        </paper-button>
+        <paper-button class="done" on-click="hide">
+          <iron-icon icon="done"></iron-icon>
+          Ok
+        </paper-button>
+      </div>
+    </div>
+
+    <firebase-collection
+      id="lqWordsA"
+      location="[[lqLocationWordsA]]"
+      data="{{words_a}}"></firebase-collection>
+    <firebase-collection
+      id="lqWordsB"
+      location="[[lqLocationWordsB]]"
+      data="{{words_b}}"></firebase-collection>
+
+  </template>
+
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'lq-full-view',
+
+    behaviors: [
+      Polymer.NeonAnimationRunnerBehavior
+    ],
+
+    properties: {
+
+      animationConfig: {
+        type: Object,
+        value: function() {
+          return {
+            'entry': [{
+              name: 'slide-down-animation',
+              node: this
+            }],
+            'exit': [{
+              name: 'fade-out-animation',
+              node: this
+            }]
+          }
+        }
+      },
+
+      _showing: {
+        type: Boolean,
+        value: false
+      },
+
+      lqLocationWordsA: {
+        type: String,
+        value: 'https://languagequiz-dev.firebaseio.com/languages/ads9ufdsf8f9ufs/words'
+      },
+
+      lqLocationWordsB: {
+        type: String,
+        value: 'https://languagequiz-dev.firebaseio.com/languages/asd98ads9uasd/words'
+      },
+
+      language: {
+        type: String,
+        value: 'English'
+      },
+
+      searchString: {
+        type: String,
+        value: '',
+        observer: 'findSuggestions'
+      }
+
+    },
+
+    listeners: {
+      'neon-animation-finish': '_onAnimationFinish'
+    },
+
+    _onAnimationFinish: function() {
+      if (this._showing) {
+      } else {
+        this.style.display = '';
+      }
+    },
+
+    show: function() {
+      this.style.display = 'inline-block';
+      this._showing = true;
+      this.playAnimation('entry');
+    },
+
+    hide: function() {
+      this._showing = false;
+      this.playAnimation('exit');
+    },
+
+    findSuggestions: function( word ) {
+      this.suggestions = [];
+
+      for ( var key in this.words_a ) {
+        if ( this.words_a[key].name.match( new RegExp( word, 'i' ) ) ) {
+          this.suggestions.push(this.words_a[key].name);
+        }
+      }
+    }
+
+  });
+
+</script>

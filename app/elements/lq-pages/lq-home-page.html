@@ -29,7 +29,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       align-items: center;
       -webkit-transition: all .5s;
       transition: all .5s;
-      transform: translateY(-10px);
+      transform: translateY(30px);
 
       @apply(--layout-horizontal);
     }
@@ -81,11 +81,11 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
     paper-toolbar[search] #searchBox {
       visibility: visible;
       opacity: 1;
-      transform: translateY(28px);
+      transform: translateY(56px);
     }
 
     paper-toolbar[search] #searchBox.float {
-      transform: translateY(100px);
+      transform: translateY(130px);
     }
 
     paper-toolbar[search] paper-icon-button.right {
@@ -215,7 +215,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
     </style>
 
     <!-- Home -->
-    <paper-scroll-header-panel condenses header-height="160" condensed-header-height="128">
+    <paper-scroll-header-panel condenses header-height="192" condensed-header-height="128">
 
       <!-- Main Toolbar -->
       <paper-toolbar class="tall" search$={{search}}>
@@ -260,7 +260,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
           <h2>Collections from the world</h2>
         </div>
         <div class="horizontal-section-container">
-          <template id="collectionsList" is="dom-repeat" items="{{collections}}" as="collection" filter="filterCollections">
+          <template id="collectionsList" is="dom-repeat" items="{{collections}}" as="collection" filter="filterCollections" sort="_sort">
             <lq-tile small uid="[[collection.__firebaseKey__]]"
               title="[[collection.name]]" user-favorite$="[[checkFavorites(collection.__firebaseKey__)]]"
               placeholder="[[tile_placeholder]]">
@@ -396,6 +396,13 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         }
       }
 
+    },
+
+    _sort: function( item_a, item_b ) {
+      var a = item_a.name.toLowerCase(),
+          b = item_b.name.toLowerCase();
+
+      return ( a < b ) ? -1 : 1;
     },
 
     refreshFilter: function() {

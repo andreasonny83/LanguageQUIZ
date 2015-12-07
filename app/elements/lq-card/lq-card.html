@@ -9,9 +9,9 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       display: inline-block;
       position: relative;
       box-sizing: border-box;
-
       background: #fff;
       border-radius: 2px;
+
       @apply(--lq-card);
     }
 
@@ -34,6 +34,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
     .header {
       position: relative;
+
       @apply(--lq-card-header);
     }
 
@@ -41,6 +42,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       display: block;
       width: 400px;
       height: 400px;
+
       @apply(--lq-card-header-image);
     }
 
@@ -49,24 +51,28 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       font-size: 24px;
       font-weight: bold;
       color: #000;
+
       @apply(--lq-card-header-text);
     }
 
     .header .title-text.over-image {
       position: absolute;
       bottom: 0px;
+
       @apply(--lq-card-header-image-text);
     }
 
     :host ::content .card-content {
       padding: 16px;
       position:relative;
+
       @apply(--lq-card-content);
     }
 
     :host ::content .card-actions {
       padding: 5px 16px;
       position:relative;
+
       @apply(--lq-card-actions);
     }
     </style>

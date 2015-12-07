@@ -8,6 +8,16 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
   :host {
     display: block;
     height: 100%;
+
+    --paper-tab-ink: var(--light-primary-color);
+  }
+
+  paper-tabs {
+    background-color: var(--dark-primary-color);
+    color: #fff;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+
+    --paper-tabs-selection-bar-color: var(--light-primary-color);
   }
 
   .content {
@@ -25,16 +35,18 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
     padding-bottom: 30px;
   }
 
-  paper-fab.delete {
-    position: absolute;
-    bottom: -28px;
-    right: 20px;
-    --paper-fab-background: var(--google-red-500);
-  }
-
   .private_check {
     margin-top: 40px;
     margin-bottom: 20px;
+  }
+
+  paper-button.delete {
+    color: var(--paper-red-500);
+    --paper-button-flat-focus-color: var(--paper-red-50);
+
+  }
+  paper-button.delete:hover {
+    background: var(--paper-red-50);
   }
 
   paper-dialog {
@@ -43,7 +55,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
   </style>
 
     <!-- Home -->
-    <paper-scroll-header-panel condenses header-height="160" condensed-header-height="128">
+    <paper-scroll-header-panel condenses header-height="192" condensed-header-height="128">
 
       <!-- Main Toolbar -->
       <paper-toolbar class="tall">
@@ -51,50 +63,95 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         <paper-icon-button on-tap="_goBack" icon="arrow-back"></paper-icon-button>
         <div class="title">The LanguageQUIZ</div>
 
+        <div class="bottom">
+          <h2>[[collection.name]]</h2>
+        </div>
+
       </paper-toolbar>
 
       <!-- Main Content -->
       <div class="content">
 
-        <div class="horizontal-section-container">
-          <h2><span>[[collection.name]]</span></h2>
-        </div>
+        <paper-tabs selected="{{selected}}">
 
-        <div class="horizontal-section-container">
-          <lq-card heading="Collection Name">
-            <div class="card-content">
-              <paper-input label="Collection Name*" value="{{collection.name}}"></paper-input>
-              <paper-input label="Description" value="{{collection.description}}" placeholder="Some description here"></paper-input>
-              <paper-checkbox class="private_check" checked="{{collection.status}}">Private collection</paper-checkbox>
+          <paper-tab>Words</paper-tab>
+          <paper-tab>Collection Settings</paper-tab>
+          <paper-tab>Collaborators</paper-tab>
+
+        </paper-tabs>
+
+        <iron-pages selected="{{selected}}">
+          <!-- Words -->
+          <div>
+            <div class="horizontal-section-container">
+              <lq-card heading="Words">
+                <div class="card-content">
+                  <lq-list-view data="[[tableData]]" on-item-click="_onItemClick"></lq-list-view>
+                  <lq-full-view id="lqWordsFullView" on-close="_onClose"></lq-full-view>
+                </div>
+              </lq-card>
             </div>
-          </lq-card>
-        </div>
+          </div>
+          <!-- Words -->
 
-        <div class="horizontal-section-container">
-          <lq-card heading="Collection Image">
-            <div class="card-content">
-              <iron-image sizing="cover" style="width:100%; height: 320px;"
-                fade preload placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAArwAAAEsBAMAAADTGn2uAAAAG1BMVEUAAAD///8fHx8/Pz9fX19/f3+fn5/f39+/v79zLBXGAAAIwElEQVR4nO3bz1vbRh7HcSFhw3GnNZijgfYhRxwD26MdTLbHuospR9xQ2OOq3YQ9om27D3/2SpofkmZGJLFs5cnm/bpgy5Lm64+lkTQSQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWI1oNHBeLWH0st3lPhfb4sZ5tYRkt93lPhfEu1bEu1bLxntY7TSJ12/ZeGd7lbfE60e8a7WieK9ul2t+2eU+FyuKF37Eu1bEu1bEu1bEu1bEu1bE20h4Mr88H5QmHF7My+9r4g0v5pflpfLlpqUL4efitZrIfTO/PH5vrRd6nm/m00rN0/nc+RL2snbBbTiLRap/q1sOf8rf/2hm8Md7ls/1c7Ge6D6bIt690hOseO/fmpd2E/e/6Wm/u/Xp5boPx8FmVmve5vfZCsZ6notEWEXna9tL3//0W13BrXghlH/K9+FCvf9Bz+GN9zs1l5kQJmpKP3t3Op/Pk/48p1ZUXNw6TSS99MeQk/7jFKiX2xZj2UZ/oKtWv1+kmy7W+DdT3qJXU3ArNtMiL89PXic63r8K8ef5KN0csm+R88XbEeLt+cHJophrki43HU3/IeOdiYJacRGv00Qa75HoX45OS60apXiPxNtsnl+DMBa3o9dCPKpPRP+/l+fTq1ioebtpCy/Dw2vRP056NQW3YiZ2ZHunN/mfNO58D0u3sK/VLL54F2o3nqXfNddRywXRlZxeH6/bRNIL43xPTyc92hUW8b6Kd/LF94KtfCt/IXbUJ6pnS/uOsVxGlfed+FrF6xTcirTWQWXCUDcfxUJ94om3q75YEOntZVLdrQ9Ho9Fib5RTqzHxuk0kvSO1eEf07BKLeL8Xx3L544XsFhK5fGes5z2Sv2VHl5eWFff8Bbdi3+rs0q1ooF4e6c3OE+/EdHJD+ZVD+2cKagckPU0kPZN94pxuFPEmcmPvijdqG99XG6sRyf1h31Sc7ik9b8HtSKyuqCu+0i8j/YN74o33igUe5SfuPlcTr6eJpG+aGOp9xlluWx+4ItFXVW87XUmSr7D0G81kvE7BrYjsfXG/OGEIFn351413s0golNvL0N6Ogtp4PU0kwsy65ayoiFfVE8S66k29g1XbDM1hI1tfz1twK7p2fTrSjN713HjL57+LHXs5rSZeTxNJ8e27zplTEa/OxRz/wmI5ZZitvJy67MzdgluxUdqScnGp7a4577lRU/Sr/VL/lX+hQHhqronX00RSbLIdd3838erQZmZ2Z0sciqD6E8n90y24FXZPF5U3B71HufFORDHXRraKyNmMgrp4fU0kojTF3t+LeHUZE1N1bJ9n7Mt4i40mzON1Cm7HzPolO5Uvp7o4N95FKbitbMPoOKEEdfH6mijdrYyeiVeHVoTliXeQX4BYLTgFt8M+DaoeimN91n5jPpavksr+PfYdwoO6eH1NlNYXir/YNTaKVx7JnILbEVtd5lalL1a/uRtv+Vvle+KW3Ydn/PH6mvjIeIcm3tKC0cXd09NTfqFR7Ry+8hXcDvu8bKPyy87q4i0fUTrZtA3fFuGP19dE83ija30JPqgeHmXv7hTcjvfEK3tmJ95Q7EyN183izZtoHO9mNmb2oLfe8vla3he5BbfCOcXer3T7M6Eq1PWYeCtu7OX04t54fU00jTdM9Hh13vcGcXGoHGZLuQW34j3xTtYf72Ql8R6JvWP9BQZBeVwhjPvegluxdLy9UcngU8ebZqjXKePtmu/1Iu/+3IJbEbpDDuPSu/q+175Ycoau8sVr4nWbaBhvaTxJxptep8ibPptyGKjNcYay5Q5tzmKf+NBWXMXpy9D0SPfHy+DgtR78cUeRW7GC817Pckpr571J+Ug2CLLO4UF1s2oU2im4He5V203pXbxrTTRXbfaI/0ddtblNNIu3fB4mN+RhfyDvf/85qK6jZfY44hJjDjlnYDPzEWMOjeKNSoss8nizu8PhyfTcHESdgttR6rVyleGs6INGzHKbS46YqTfN4i0Pssm7d7G9DqfgduzbfaaojH3Isn3jvePqYuFHjPd6mmga76N+Hwl/vN4zm/Xbfu5uhR5r992teLRWlCx3t0I1sbKtd0vGm9hHMu+xYf2ce23le2Yz1XO48UaeuwTjwDapRq5j8jTRtO813c1ExjspHo8KagpuR2J1vqUz9PCZO8X2Deb0E7fzHVY7vCImp4mmZw56G4mEPLRti/5t6VlCX8HtGNrPORT3bJ97zmFo72yR5zkH60rZPOfgNtH0vLdvPpBXbfJZtIeHp9tj84lVcDs69jNXE3MXNtbpeOLtOGl6Hi7aqo6dmHNPt4nGV22yoU3RUzfSzEN9+olIt+B2LPQzZtHPqg7Vb83MLud/xkw/TnomJ3X1M2bB2UB9Yj3QZOJ1m2g85rCbtZlm+oO5T3ly9fT0EBfDY07B7eikF45/f3lwcq07z4novzkIT+6FOQLVPCH57tUgCE8TPWmWXiONDg4vit48TC/8D4LDa/W+uHJymmg8YiZ2zw/zAQbrNnBantpq3YLboZ971fGa/cp0ys8+32seqS0esh3oeYaV90W8ThPNx3v1AIN9lz1t6rGm4JacyUbfjYuKMm/MDM88nS7Ev3/UEyL5UHS/+B9V9Zj0QL4r3223mmh8Myh/Fn332PMQQ9f0UE7BLYku7u4uy+cxp3d3t8e1s5cX++VVecrJ1d0vlf9vCNM1+f+d4cOa+HDp+s79nxQXPG7BaMweVsFKbbT5PO+Xx32iFStEvGtF57BW7n8TYIU+0X2gL4Qzoo2motLrTzQS+f9s+1/mpTPgisa2xe5Yvvo2bvV/XL8M3WyE6vL85OJeyJFgrNS3sR583OOkdw3C6zzgvn4ICqs2mk5be5AXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB8if4HvXP8n5homDkAAAAASUVORK5CYII=" src="[[collection.image]]">
-              </iron-image>
-
-              <paper-input label="Image URL" type="url" placeholder="http://lorempixel.com/800/400/animals/" error-message="enter a valid url" value="{{collection.image}}"></paper-input>
+          <!-- Settings -->
+          <div>
+            <div class="horizontal-section-container">
+              <lq-card heading="Collection Name">
+                <div class="card-content">
+                  <paper-input label="Collection Name*" value="{{collection.name}}"></paper-input>
+                  <paper-input label="Description" value="{{collection.description}}" placeholder="Some description here"></paper-input>
+                  <paper-checkbox class="private_check" checked="{{collection.status}}">Private collection</paper-checkbox>
+                </div>
+              </lq-card>
             </div>
 
-            <paper-fab icon="delete" class="delete" on-tap="openDialogDelete"></paper-fab>
+            <div class="horizontal-section-container">
+              <lq-card heading="Collection Image">
+                <div class="card-content">
+                  <iron-image sizing="cover" style="width:100%; height: 320px;"
+                    fade preload placeholder="data:image/png;base64,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" src="[[collection.image]]">
+                  </iron-image>
 
-            <paper-dialog id="dialogDelete" modal entry-animation="scale-up-animation" exit-animation="fade-out-animation" role="alertdialog" on-iron-overlay-closed="_deleteCollection">
-              <h2>Alert</h2>
-              <paper-dialog-scrollable>
-                Are you sure you want to delete the current collection?
-              </paper-dialog-scrollable>
-              <div class="buttons">
-                <paper-button dialog-dismiss autofocus>No</paper-button>
-                <paper-button dialog-confirm>Yes</paper-button>
-              </div>
-            </paper-dialog>
+                  <paper-input label="Image URL" type="url" placeholder="http://lorempixel.com/800/400/animals/" error-message="enter a valid url" value="{{collection.image}}"></paper-input>
+                </div>
+              </lq-card>
+            </div>
 
-          </lq-card>
-        </div>
+            <div class="horizontal-section-container">
+              <lq-card heading="Danger Zone">
+
+                <div class="card-content">
+                  <paper-button class="delete" on-tap="openDialogDelete">
+                    <iron-icon icon="delete"></iron-icon>
+                    Delete Collection
+                  </paper-button>
+
+                  <paper-dialog id="dialogDelete" modal entry-animation="scale-up-animation" exit-animation="fade-out-animation" role="alertdialog" on-iron-overlay-closed="_deleteCollection">
+                    <h2>Alert</h2>
+                    <paper-dialog-scrollable>
+                      Are you sure you want to delete the current collection?
+                    </paper-dialog-scrollable>
+                    <div class="buttons">
+                      <paper-button dialog-dismiss autofocus>No</paper-button>
+                      <paper-button dialog-confirm>Yes</paper-button>
+                    </div>
+                  </paper-dialog>
+                </div>
+
+              </lq-card>
+            </div>
+          </div>
+          <!-- Settings -->
+
+          <!-- Collaborators -->
+          <div>
+          </div>
+          <!-- Collaborators -->
+        </iron-pages>
+
+
+
 
       <!-- content -->
       </div>
@@ -117,12 +174,41 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         coll_uid: {
           type: String,
           value: ''
+        },
+
+        tableData: {
+          type: Object,
+          value: function() {
+            return [
+              {
+                _id: 'item-0',
+                word_a: 'car',
+                word_b: 'macchina'
+              },
+              {
+                _id: 'item-1',
+                word_a: 'tree',
+                word_b: 'albero'
+              },
+              {
+                _id: 'item-2',
+                word_a: 'parrot',
+                word_b: 'pappagallo'
+              },
+              {
+                _id: 'item-3',
+                word_a: 'parrot',
+                word_b: 'pappagallo'
+              }
+            ];
+          }
         }
 
       },
 
       init: function( uid ) {
         this.coll_uid = uid;
+        this.selected = 0;
         window.LQ.lqMain.collLocation = window.LQ.lqMain.apiDir + uid.path;
       },
 
@@ -142,8 +228,16 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
           window.LQ.lqMain._deleteCollection( this.coll_uid, this.collection.name );
           this._goBack();
         }
-      }
+      },
 
+
+      _onItemClick: function( e, selected ) {
+        console.log(selected.item.id);
+        var dropdown = document.querySelector('#lqWordsFullView');
+        if (dropdown) {
+          dropdown.show();
+        }
+      }
     });
   </script>
 </dom-module>
