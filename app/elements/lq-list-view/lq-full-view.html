@@ -43,10 +43,8 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
   <template>
 
     <div class="vertical-section">
-      <paper-typeahead-input max-suggestions="3" local-candidates="{{suggestions}}" value="{{searchString::input}}" placeholder="Word in English"></paper-typeahead-input>
-      <paper-typeahead-input max-suggestions="3" local-candidates="{{suggestions}}" value="{{searchString::input}}" placeholder="Word in Italian"></paper-typeahead-input>
-      <paper-input type="text" label="synonym"></paper-input>
-      <paper-input type="text" label="Taboo words"></paper-input>
+      <paper-input-suggestions max-suggestions="3" local-suggestions="{{suggestions_a}}" input-value="{{value_a}}" placeholder="Word in English"></paper-input-suggestions>
+      <paper-input-suggestions max-suggestions="3" local-suggestions="{{suggestions_b}}" input-value="{{value_b}}" placeholder="Word in Italian"></paper-input-suggestions>
 
       <div class="horizontal-section-container">
         <paper-button class="cancel" on-click="hide">
@@ -97,7 +95,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
               name: 'fade-out-animation',
               node: this
             }]
-          }
+          };
         }
       },
 
@@ -116,23 +114,55 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         value: 'https://languagequiz-dev.firebaseio.com/languages/asd98ads9uasd/words'
       },
 
+      suggestions_a: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      },
+
+      suggestions_b: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      },
+
       language: {
         type: String,
         value: 'English'
       },
 
-      searchString: {
+      value_a: {
         type: String,
-        value: '',
-        observer: 'findSuggestions'
+        value: 'English'
       }
 
     },
+
+    observers: [
+      'prepareSuggestions(searchString.*)'
+    ],
 
     listeners: {
       'neon-animation-finish': '_onAnimationFinish'
     },
 
+    /**
+     * Based on the paper-typeahead-input in where the user has typed,
+     * trigger a displaySuggestions to display the words suggested.
+     *
+     * @param  [Object] input The input in where the user has typed the word
+     */
+    prepare: function() {
+      this.createSuggestions( this.words_a, this.suggestions_a );
+      this.createSuggestions( this.words_b, this.suggestions_b );
+    },
+
+    /**
+     * Animate this component using neon-animations
+     * @return {[type]} [description]
+     */
     _onAnimationFinish: function() {
       if (this._showing) {
       } else {
@@ -140,7 +170,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       }
     },
 
-    show: function() {
+    show: function( item ) {
       this.style.display = 'inline-block';
       this._showing = true;
       this.playAnimation('entry');
@@ -151,14 +181,21 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       this.playAnimation('exit');
     },
 
-    findSuggestions: function( word ) {
-      this.suggestions = [];
-
-      for ( var key in this.words_a ) {
-        if ( this.words_a[key].name.match( new RegExp( word, 'i' ) ) ) {
-          this.suggestions.push(this.words_a[key].name);
-        }
+    /**
+     * Populate the suggestions with the possible related words to suggest
+     * and display the results inside the correspondent paper-typeahead-input
+     *
+     * @param  [Object] language_words The list of words fetched from the database
+     * @param  [String] input          The word typed by the user inside the paper-typeahead-input
+     */
+    createSuggestions: function( language_words, suggestions ) {
+      for ( var key in language_words ) {
+        suggestions.push( language_words[key].name );
       }
+    },
+
+    addWord: function() {
+      console.log(this.sonny);
     }
 
   });

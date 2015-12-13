@@ -81,17 +81,19 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         </paper-tabs>
 
         <iron-pages selected="{{selected}}">
+
           <!-- Words -->
           <div>
             <div class="horizontal-section-container">
               <lq-card heading="Words">
                 <div class="card-content">
-                  <lq-list-view data="[[tableData]]" on-item-click="_onItemClick"></lq-list-view>
+                  <lq-list-view id="lqWordsListView" data="[[tableData]]" on-item-click="_onItemClick"></lq-list-view>
                   <lq-full-view id="lqWordsFullView" on-close="_onClose"></lq-full-view>
                 </div>
               </lq-card>
             </div>
           </div>
+
           <!-- Words -->
 
           <!-- Settings -->
@@ -150,10 +152,13 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
           <!-- Collaborators -->
         </iron-pages>
 
-
-
+        <firebase-collection
+          id="lqCollWords"
+          location="{{lqLocationCollectionWords}}"
+          data="{{collection_words}}"></firebase-collection>
 
       <!-- content -->
+
       </div>
 
     </paper-scroll-header-panel>
@@ -165,6 +170,23 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
       properties: {
         collection: {
+          type: Object,
+          value: function() {
+            return [];
+          }
+        },
+
+        lqLocationCollectionWords: {
+          type: String,
+          value: null
+        },
+
+        dataReady: {
+          type: Boolean,
+          value: false
+        },
+
+        collection_words: {
           type: Object,
           value: function() {
             return [];
@@ -203,13 +225,24 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
             ];
           }
         }
-
       },
 
+      // observers: [
+      //   'prepareData(collection_words.pippo)'
+      // ],
+      //
+      //
       init: function( uid ) {
         this.coll_uid = uid;
+        window.LQ.lqMain.collLocation = this.lqLocationCollectionWords = window.LQ.lqMain.apiDir + uid.path;
+        this.lqLocationCollectionWords += '/words'
+
+        this.dataReady = true;
         this.selected = 0;
-        window.LQ.lqMain.collLocation = window.LQ.lqMain.apiDir + uid.path;
+      },
+
+        prepareData: function() {
+        // console.log ( this.collection_words.col_a.language_id );
       },
 
       _goBack: function() {
@@ -232,10 +265,13 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
 
       _onItemClick: function( e, selected ) {
-        console.log(selected.item.id);
-        var dropdown = document.querySelector('#lqWordsFullView');
-        if (dropdown) {
-          dropdown.show();
+        var editWord = document.querySelector( '#lqWordsFullView' );
+        editWord.value_a = selected.word_a;
+        editWord.value_b = selected.word_b;
+        editWord.prepare();
+
+        if ( dropdown ) {
+          editWord.show( selected );
         }
       }
     });

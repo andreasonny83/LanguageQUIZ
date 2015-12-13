@@ -31,7 +31,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
     <template is="dom-repeat" items="[[data]]">
 
-      <paper-item id="[[item._id]]">
+      <paper-item id="[[item._id]]" word-a="[[item.word_a]]" word-b="[[item.word_b]]">
         <paper-checkbox></paper-checkbox>
         <paper-item-body two-line on-click="_onClick">
           <div>[[item.word_a]]</div>
@@ -84,19 +84,16 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
 
     },
 
-    _onClick: function(event) {
+    _onClick: function( event ) {
       var target = event.target;
-      while (target !== this && !target._templateInstance) {
+      while ( target !== this && !target._templateInstance ) {
         target = target.parentNode;
       }
 
-      // configure the page animation
-      this.sharedElements = {
-        'hero': target,
-      };
-
       this.fire('item-click', {
         item: target,
+        word_a: target.wordA,
+        word_b: target.wordB
       });
     }
 
