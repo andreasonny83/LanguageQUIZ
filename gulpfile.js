@@ -255,17 +255,15 @@ gulp.task('default', ['clean'], function (cb) {
  *
  * where username and password are the ftp credentials
  */
-// gulp.task('deploy', function(callback) {
-//   runSequence(
-//     'clean:build',
-//     'sass:build',
-//     'images',
-//     'templates',
-//     'usemin',
-//     'fonts',
-//     'send',
-//     callback);
-// });
+  gulp.task('deploy', ['clean'], function (cb) {
+    runSequence(
+      ['copy', 'styles'],
+      'elements',
+      ['jshint', 'images', 'fonts', 'html'],
+      'vulcanize',
+      'send',
+      cb);
+});
 
 gulp.task( 'send', function( cb ) {
   var remotePath = args.remote_path,

@@ -235,7 +235,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
       init: function( uid ) {
         this.coll_uid = uid;
         window.LQ.lqMain.collLocation = this.lqLocationCollectionWords = window.LQ.lqMain.apiDir + uid.path;
-        this.lqLocationCollectionWords += '/words'
+        this.lqLocationCollectionWords += '/words';
 
         this.dataReady = true;
         this.selected = 0;
@@ -270,7 +270,7 @@ Copyright (c) 2015 LanguageQUIZ. All rights reserved.
         editWord.value_b = selected.word_b;
         editWord.prepare();
 
-        if ( dropdown ) {
+        if ( editWord ) {
           editWord.show( selected );
         }
       }

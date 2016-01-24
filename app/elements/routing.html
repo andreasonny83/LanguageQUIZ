@@ -41,6 +41,7 @@ global.addEventListener( 'AppReady', function() {
   page( '/home', function () {
     global.LQ.lqMain.selected = 1;
     global.LQ.lqHome.refreshFilter();
+    // page.redirect( '/collections/-K3LCKXLPIb_xQDnQibI' );
     scrollToTop();
   });
 
@@ -57,8 +58,9 @@ global.addEventListener( 'AppReady', function() {
   });
 
   page( '/collections/:uid', function ( uid ) {
-    global.LQ.lqMain.selected = 4;
+    global.LQ.lqCollectionEdit.dataReady = false;
     global.LQ.lqCollectionEdit.init( uid );
+    global.LQ.lqMain.selected = 4;
     global.LQ.lqCollectionEdit.querySelector( '#mainContainer' ).scrollTop = 0;
   });
 
